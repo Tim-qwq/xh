@@ -79,6 +79,11 @@
             
             <!-- 动画按钮组 -->
             <div class="flex items-center space-x-4">
+                <button id="gameBtn" class="btn-primary flex items-center space-x-2">
+                    <i class="fa fa-gamepad"></i>
+                    <span>飞机小游戏</span>
+                </button>
+                
                 <button id="photoBtn" class="btn-primary flex items-center space-x-2">
                     <i class="fa fa-user-circle"></i>
                     <span>个人照片</span>
@@ -119,8 +124,8 @@
                 <a href="#" class="block py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors">
                     <i class="fa fa-chart-bar mr-2"></i>统计
                 </a>
-                <a href="#" class="block py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors">
-                    <i class="fa fa-cog mr-2"></i>设置
+                <a href="https://tim-qwq.github.io/xh/index03.html" class="block py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-cog mr-2"></i>更新日志
                 </a>
                 <a href="https://tim-qwq.github.io/xh/index01.html" class="block py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors">
                     <i class="fa fa-users mr-2"></i>向华公安部人员
@@ -232,6 +237,11 @@
     </div>
 
     <script>
+        // 飞机小游戏按钮点击事件
+        document.getElementById('gameBtn').addEventListener('click', function() {
+            window.location.href = 'https://tim-qwq.github.io/xh/index02.html'; // 替换为实际游戏网址
+        });
+        
         // 个人照片按钮点击事件
         document.getElementById('photoBtn').addEventListener('click', function() {
             window.location.href = 'https://tim-qwq.github.io/xh/index01.html';
@@ -299,4 +309,3 @@
     </script>
 </body>
 </html>
-    
