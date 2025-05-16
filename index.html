@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex 布局优化版</title>
+    <meta name="description" content="Re01 编程课的Flex布局优化演示。">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    
+    <!-- 配置 Tailwind CSS -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#722ED1',
+                        accent: '#FF7D00',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 4px 20px rgba(0, 0, 0, 0.08)',
+                        'hover': '0 8px 30px rgba(0, 0, 0, 0.12)',
+                    }
+                },
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .btn-primary {
+                @apply bg-primary text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 hover:bg-primary/90 hover:shadow-lg transform hover:-translate-y-1;
+            }
+            .btn-secondary {
+                @apply bg-secondary text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 hover:bg-secondary/90 hover:shadow-lg transform hover:-translate-y-1;
+            }
+            .btn-accent {
+                @apply bg-accent text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 hover:bg-accent/90 hover:shadow-lg transform hover:-translate-y-1;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-hover transform hover:-translate-y-1;
+            }
+            .fade-in {
+                animation: fadeIn 0.5s ease-in-out;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            .slide-up {
+                animation: slideUp 0.5s ease-out;
+            }
+            @keyframes slideUp {
+                from { transform: translateY(20px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-neutral min-h-screen flex flex-col">
+    <!-- 头部导航栏 -->
+    <header class="bg-white shadow-md z-10 sticky top-0">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <img src="D:\新建文件夹 (2)\A257F81E81E3B0681F4A5A0810ABF69C.jpg" alt="Logo" class="w-10 h-10 rounded-full">
+                <h1 class="text-xl font-bold text-dark">向华公安部</h1>
+            </div>
+            
+            <!-- 动画按钮组 -->
+            <div class="flex items-center space-x-4">
+                <button id="photoBtn" class="btn-primary flex items-center space-x-2">
+                    <i class="fa fa-user-circle"></i>
+                    <span>个人照片</span>
+                </button>
+                
+                <button id="chatBtn" class="btn-secondary flex items-center space-x-2">
+                    <i class="fa fa-comment"></i>
+                    <span>DeepSeek大模型</span>
+                </button>
+                
+                <button id="joinBtn" class="btn-accent flex items-center space-x-2">
+                    <i class="fa fa-users"></i>
+                    <span>入群按钮</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="flex-1 container mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
+        <!-- 侧边栏 -->
+        <aside class="w-full md:w-64 bg-white rounded-xl shadow-card p-4 md:sticky md:top-24">
+            <div class="flex items-center space-x-4 mb-6">
+                <img src="https://img.ixintu.com/download/jpg/20200821/2198029116a8173f41e008d967c80040_512_512.jpg!ys" alt="Profile" class="w-14 h-14 rounded-full border-2 border-primary">
+                <div>
+                    <h3 class="font-bold text-dark">访客</h3>
+                    <p class="text-sm text-gray-500">向华公安部</p>
+                </div>
+            </div>
+            
+            <nav class="space-y-1">
+                <a href="#" class="block py-2 px-3 rounded-lg bg-primary/10 text-primary font-medium">
+                    <i class="fa fa-home mr-2"></i>首页
+                </a>
+                <a href="#" class="block py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-file-text mr-2"></i>文档
+                </a>
+                <a href="#" class="block py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-chart-bar mr-2"></i>统计
+                </a>
+                <a href="#" class="block py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-cog mr-2"></i>设置
+                </a>
+                <a href="https://tim-qwq.github.io/xhgab07/" class="block py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-users mr-2"></i>向华公安部人员
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- 主内容 -->
+        <div class="flex-1">
+            <!-- 数据卡片区域 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-xl shadow-card p-4 card-hover">
+                    <img src="D:\新建文件夹 (2)\17FC2D00E9C41EF043165790A046028C.png" alt="数据展示" class="w-full h-32 object-cover rounded-lg mb-3">
+                    <h3 class="font-bold text-dark">聚会</h3>
+                    <p class="text-sm text-gray-500">无</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-card p-4 card-hover">
+                    <img src="D:\新建文件夹 (2)\2F7D620D99E72180090CD0599A76CB99.png" alt="数据展示" class="w-full h-32 object-cover rounded-lg mb-3">
+                    <h3 class="font-bold text-dark">聚会</h3>
+                    <p class="text-sm text-gray-500">无</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-card p-4 card-hover">
+                    <img src="D:\新建文件夹 (2)\F5198AF62797B30E513A36DE9D26D03C.jpg" alt="数据展示" class="w-full h-32 object-cover rounded-lg mb-3">
+                    <h3 class="font-bold text-dark">聚会</h3>
+                    <p class="text-sm text-gray-500">无</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-card p-4 card-hover">
+                    <img src="D:\新建文件夹 (2)\47DBA5D764FE77D40D658993D57C5ECE.png" alt="数据展示" class="w-full h-32 object-cover rounded-lg mb-3">
+                    <h3 class="font-bold text-dark">聚会</h3>
+                    <p class="text-sm text-gray-500">无</p>
+                </div>
+            </div>
+            
+            <!-- 列表区域 -->
+            <div class="bg-white rounded-xl shadow-card p-4 mb-6">
+                <h2 class="text-xl font-bold text-dark mb-4">列表内容</h2>
+                <div class="space-y-4">
+                    <div class="border-l-4 border-primary pl-4 py-2 hover:bg-gray-50 transition-colors">
+                        <h3 class="font-medium text-dark">项目标题1</h3>
+                        <p class="text-sm text-gray-600">这是一个项目的详细描述信息，包含了该项目的主要内容和特点。</p>
+                    </div>
+                    <div class="border-l-4 border-secondary pl-4 py-2 hover:bg-gray-50 transition-colors">
+                        <h3 class="font-medium text-dark">项目标题2</h3>
+                        <p class="text-sm text-gray-600">这是一个项目的详细描述信息，包含了该项目的主要内容和特点。</p>
+                    </div>
+                    <div class="border-l-4 border-accent pl-4 py-2 hover:bg-gray-50 transition-colors">
+                        <h3 class="font-medium text-dark">项目标题3</h3>
+                        <p class="text-sm text-gray-600">这是一个项目的详细描述信息，包含了该项目的主要内容和特点。</p>
+                    </div>
+                    <div class="border-l-4 border-green-500 pl-4 py-2 hover:bg-gray-50 transition-colors">
+                        <h3 class="font-medium text-dark">项目标题4</h3>
+                        <p class="text-sm text-gray-600">这是一个项目的详细描述信息，包含了该项目的主要内容和特点。</p>
+                    </div>
+                    <div class="border-l-4 border-purple-500 pl-4 py-2 hover:bg-gray-50 transition-colors">
+                        <h3 class="font-medium text-dark">项目标题5</h3>
+                        <p class="text-sm text-gray-600">这是一个项目的详细描述信息，包含了该项目的主要内容和特点。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 提示和消息区域 -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div class="bg-white rounded-xl shadow-card p-4 lg:col-span-1">
+                    <h3 class="font-bold text-dark mb-3">提示信息</h3>
+                    <p class="text-sm text-gray-600">工程款：8元
+没素质的拿破仑😈🖕
+
+望海帝国主义路线：建立大望海帝国朝廷，拿下并分封：Q群总督府、汉东总督府、孤儿院总督府。
+向华主义路线：维持现状。
+望海资本主义路线：复辟大跃进等维护独裁统治。</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-card p-4 lg:col-span-2">
+                    <h3 class="font-bold text-dark mb-3">公告</h3>
+                    <p class="text-gray-600">此向华公安部，并非真实公安部，此公安部为虚拟公安部，非正式公安，望理解。</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white shadow-inner py-6">
+        <div class="container mx-auto px-4 text-center text-gray-600 text-sm">
+            <p>© 2025 向华公安部 版权所有</p>
+            <p>版本号：V1.0.1</p>
+            <p class="mt-1">联系方式: admin@example.com</p>
+        </div>
+    </footer>
+
+    <!-- DeepSeek 大模型聊天窗口 (默认隐藏) -->
+    <div id="chatWindow" class="fixed bottom-20 right-6 w-80 bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-500 scale-0 opacity-0">
+        <div class="bg-secondary text-white p-3 flex justify-between items-center">
+            <h3 class="font-bold">DeepSeek 大模型</h3>
+            <button id="closeChat" class="text-white hover:text-gray-200">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+        <div id="chatMessages" class="h-64 overflow-y-auto p-3 space-y-3 bg-gray-50">
+            <div class="flex justify-start">
+                <div class="bg-white rounded-lg p-2 shadow-sm max-w-[80%]">
+                    <p class="text-sm text-gray-800">你好！我是 DeepSeek 大模型，有什么可以帮助你的吗？</p>
+                </div>
+            </div>
+        </div>
+        <div class="p-3 border-t">
+            <button id="sendMessage" class="w-full btn-secondary">
+                <span>你好</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 个人照片按钮点击事件
+        document.getElementById('photoBtn').addEventListener('click', function() {
+            window.location.href = 'https://tim-qwq.github.io/xhgab07/';
+        });
+        
+        // DeepSeek大模型按钮点击事件
+        document.getElementById('chatBtn').addEventListener('click', function() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.remove('scale-0', 'opacity-0');
+            chatWindow.classList.add('scale-100', 'opacity-100');
+        });
+        
+        // 关闭聊天窗口
+        document.getElementById('closeChat').addEventListener('click', function() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.remove('scale-100', 'opacity-100');
+            chatWindow.classList.add('scale-0', 'opacity-0');
+        });
+        
+        // 发送消息按钮点击事件
+        document.getElementById('sendMessage').addEventListener('click', function() {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // 添加用户消息
+            const userMessage = document.createElement('div');
+            userMessage.className = 'flex justify-end';
+            userMessage.innerHTML = `
+                <div class="bg-primary text-white rounded-lg p-2 shadow-sm max-w-[80%] fade-in">
+                    <p class="text-sm">你好</p>
+                </div>
+            `;
+            chatMessages.appendChild(userMessage);
+            
+            // 模拟回复延迟
+            setTimeout(() => {
+                const replyMessage = document.createElement('div');
+                replyMessage.className = 'flex justify-start';
+                replyMessage.innerHTML = `
+                    <div class="bg-white rounded-lg p-2 shadow-sm max-w-[80%] slide-up">
+                        <p class="text-sm text-gray-800">你好👋我是 **DeepSeek Chat**，由深度求索公司（DeepSeek）研发的智能AI助手！🤖✨  
+
+我可以帮你解答各种问题，比如学习、工作、编程、生活小技巧，甚至陪你聊天！💡📚 无论是查资料、写文章、翻译，还是代码调试，我都能助你一臂之力。  
+
+有什么想问的，尽管开口吧！😃我是 **DeepSeek Chat**，由深度求索公司（DeepSeek）研发的智能AI助手！🤖✨  
+
+我可以帮你解答各种问题，比如学习、工作、编程、生活小技巧，甚至陪你聊天！💡📚 无论是查资料、写文章、翻译，还是代码调试，我都能助你一臂之力。  
+
+有什么想问的，尽管开口吧！😃</p>
+                    </div>
+                `;
+                chatMessages.appendChild(replyMessage);
+                
+                // 滚动到底部
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000);
+            
+            // 滚动到底部
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+        
+        // 入群按钮点击事件
+        document.getElementById('joinBtn').addEventListener('click', function() {
+            window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=dEKudygGvvibsqCudG9oJnDyW0oNBTr%2BlhTxhZTFS25dCwOcQPPK41I6sdqxRtZa&busi_data=eyJncm91cENvZGUiOiIxMDI4ODQ3MTQzIiwidG9rZW4iOiI0Sy9hdkd6dDM0TERSSUtxS3VxSmI1WnRIY2pJTEQ4WFJ2ZGg2WUU3a1A2TGhiZ3B6Qk9YRmpYZEtHWjBzWHVzIiwidWluIjoiMjI5NTQzNDA0MiJ9&data=OmpyxumP08TF4VDq1wzuMT7FR8xtrZnWzuFFAi_57Y695gDT17US8lu5__Lv2NpJZRA7a_id7TuxV_ZjMoA3CA&svctype=4&tempid=h5_group_info';
+        });
+    </script>
+</body>
+</html>
+    
