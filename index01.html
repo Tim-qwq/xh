@@ -2,102 +2,152 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=2.0">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>向华公安部人员</title>
     <style>
-      a{
-        text-decoration: none;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .top-right {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #1a73e8;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+        }
+
+        .back-to-home:hover {
+            background-color: #1556b0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .officer-box {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            margin: 10px;
+        }
+
+        .officer-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .officer-box img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .officer-info {
+            padding: 16px;
+            text-align: center;
+        }
+
+        .rank {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        @media (min-width: 768px) {
+            .officer-box {
+                width: calc(50% - 20px);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .officer-box {
+                width: calc(33.33% - 20px);
+            }
+        }
     </style>
 </head>
 <body>
-  <style>
-    .top-right {
-       position: absolute;
-       top: 0;
-       right: 0;
-     }
-   </style>
-    <p class="top-right"><a href="https://tim-qwq.github.io/xh/index.html">回到主页</a></p>
+    <a href="https://tim-qwq.github.io/xh/index.html" class="top-right back-to-home">回到主页</a>
+
+    <h2 style="text-align: center; margin: 20px 0; color: #333;">向华公安部人员</h2>
+    <hr style="border: 1px solid #e0e0e0; margin: 20px 0;">
+
+    <div class="container">
+        <div class="officer-box">
+            <img src="img/ca2ec06b66c83aafb38983b09a1e3804.jpg" alt="门卫兼公安部建筑师">
+            <div class="officer-info">
+                <h1>门卫兼公安部建筑师</h1>
+                <p class="rank">职位信息</p>
+            </div>
+        </div>
+
+        <div class="officer-box">
+            <img src="img/041868bfe421a81c5669397ac5b0eb68.png" alt="特警副队长 亚枫">
+            <div class="officer-info">
+                <h1>【特警副队长】亚枫［二级警督］</h1>
+                <p class="rank">警衔：二级警督</p>
+            </div>
+        </div>
+
+        <div class="officer-box">
+            <img src="img/7a7aabcf1fba35e40bb7b377f8682d75.jpg" alt="副部 【正部级】【总警监】">
+            <div class="officer-info">
+                <h1>副部 【正部级】【总警监】</h1>
+                <p class="rank">职级：正部级</p>
+            </div>
+        </div>
+
+        <div class="officer-box">
+            <img src="img/b03e047642d8e24f493a1f6fdc5fb532.jpg" alt="正部长-LTSuez">
+            <div class="officer-info">
+                <h1>正部长-LTSuez[总警监]</h1>
+                <p class="rank">警衔：总警监</p>
+            </div>
+        </div>
+
+        <div class="officer-box">
+            <img src="img/QQ20241019-224349.png" alt="向华公安部网页设计师">
+            <div class="officer-info">
+                <h1>向华公安部网页设计师</h1>
+                <p class="rank">职位描述</p>
+            </div>
+        </div>
+
+        <div class="officer-box">
+            <img src="img/a0a107c43ee2110b3f71915413ddb253.jpg" alt="CN_God【特警总队长】">
+            <div class="officer-info">
+                <h1>CN_God【特警总队长】【纪委书记】</h1>
+                <p class="rank">职务：特警总队长</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
-<h2>向华公安部人员</h2>
-<hr>
-<style>
-
-.box {
-  
-  width: 250px;
-  height: 380px;
-  background-color: #f0f0f0;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
-  position: absolute;
-  top: 80px; /* 向上移动 50 像素 */
-  margin-left: 50px; /* 向左移动 50 像素 */
-
-}
-   </style>
-   <body>
-    <div class="box" ><img  width="250px" height="160 src=" src="img/ca2ec06b66c83aafb38983b09a1e3804.jpg"><h1>门卫兼公安部建筑师</h1></div>
-    <style>
-  .box1 {
-    width: 250px;
-    height: 380px;
-    background-color: #f0f0f0;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
-    position: absolute;
-    top: 515px; /* 向上移动 50 像素 */
-    margin-left: 50px; /* 向左移动 50 像素 */
-  }
-  </style>
-
-  </body>
-  <div class="box1" ><img  width="250px" height="160 src=" src="img/041868bfe421a81c5669397ac5b0eb68.png"><h1>【特警副队长】亚枫［二级警督］</h1></div>
-  <style>
-    .box2 {
-      width: 250px;
-      height: 380px;
-      background-color: #f0f0f0;
-      box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
-      position: absolute;
-  top: 80px; /* 向上移动 50 像素 */
-  left: 400px; /* 向左移动 50 像素 */
-    }
-    </style>
-     <div class="box2" ><img  width="250px" height="160 src=" src="img/7a7aabcf1fba35e40bb7b377f8682d75.jpg"><h1>副部 【正部级】【总警监】</h1></div>
-     <style>
-      .box3 {
-        width: 250px;
-        height: 380px;
-        background-color: #f0f0f0;
-        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
-        position: absolute;
-    top: 515px; /* 向上移动 50 像素 */
-    left: 400px; /* 向左移动 50 像素 */
-      }
-      </style>
-       <div class="box3" ><img  width="250px" height="160 src=" src="img/b03e047642d8e24f493a1f6fdc5fb532.jpg"><h1>正部长-LTSuez[总警监]</h1></div>
-       <style>
-        .box4 {
-          width: 250px;
-          height: 380px;
-          background-color: #f0f0f0;
-          box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
-          position: absolute;
-      top: 80px; /* 向上移动 50 像素 */
-      left: 750px; /* 向左移动 50 像素 */
-        }
-        </style>
-         <div class="box4" ><img  width="250px" height="160 src=" src="img/QQ20241019-224349.png"><h1>向华公安部网页设计师</h1></div>
-         <style>
-          .box5 {
-            width: 250px;
-            height: 380px;
-            background-color: #f0f0f0;
-            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
-            position: absolute;
-        top: 515px; /* 向上移动 50 像素 */
-        left: 750px; /* 向左移动 50 像素 */
-          }
-      </style>
-      <div class="box5" ><img  width="250px" height="160 src=" src="img/a0a107c43ee2110b3f71915413ddb253.jpg"><h1>CN_God【特警总队长】【纪委书记】</h1></div>
