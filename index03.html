@@ -1,11 +1,9 @@
-<doubaocanvas identifier="update-log-page" type="webview" title="更新日志网页">
-    <doubaocanvas-part language="html" path="update_log.html" description="更新日志网页代码">
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>更新日志 - V1.2.5</title>
+  <title>更新日志 - V1.3.1</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
   <script>
@@ -84,9 +82,9 @@
           <i class="fa fa-calendar-o mr-2"></i>2025年5月17日 发布
         </div>
         <h2 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-neutral-700 mb-4 text-shadow">
-          <span class="text-primary">V1.2.5</span> 更新日志
+          <span class="text-primary">V1.3.1</span> 更新日志
         </h2>
-        <p class="text-neutral-500 max-w-2xl mx-auto text-lg">本次更新包含若干细节优化与命名调整，提升系统稳定性和可读性。</p>
+        <p class="text-neutral-500 max-w-2xl mx-auto text-lg">本次更新主要聚焦于AI模型升级与性能优化，提升系统稳定性和用户体验。</p>
       </div>
 
   <!-- 更新内容卡片 -->
@@ -99,8 +97,8 @@
                 <i class="fa fa-wrench text-2xl"></i>
               </div>
               <div>
-                <h3 class="text-2xl font-bold">细节优化</h3>
-                <p class="text-white/80">本次更新专注于系统细节和交互体验的完善</p>
+                <h3 class="text-2xl font-bold">AI模型升级</h3>
+                <p class="text-white/80">本次更新专注于AI核心能力的全面提升</p>
               </div>
             </div>
           </div>
@@ -112,23 +110,47 @@
                 <div class="bg-neutral-50 rounded-xl p-5 border border-neutral-200 transition-all duration-300 hover:shadow-md hover:translate-y-[-5px]">
                   <div class="flex items-start">
                     <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-green-600 mr-4 shrink-0">
-                      <i class="fa fa-bug"></i>
+                      <i class="fa fa-microchip"></i>
                     </div>
                     <div>
-                      <h4 class="font-bold text-lg mb-2">① 细微修复</h4>
-                      <p class="text-neutral-500">修复了若干影响使用体验的细节问题，提升系统稳定性。</p>
+                      <h4 class="font-bold text-lg mb-2">① Deepseek-R1更新</h4>
+                      <p class="text-neutral-500">升级至最新Deepseek-R1模型，大幅提升文本理解与生成能力，支持更复杂的语义推理任务。</p>
                     </div>
                   </div>
                 </div>
 
-<div class="bg-neutral-50 rounded-xl p-5 border border-neutral-200 transition-all duration-300 hover:shadow-md hover:translate-y-[-5px]">
+                <div class="bg-neutral-50 rounded-xl p-5 border border-neutral-200 transition-all duration-300 hover:shadow-md hover:translate-y-[-5px]">
                   <div class="flex items-start">
-                    <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600 mr-4 shrink-0">
-                      <i class="fa fa-rename"></i>
+                    <div class="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center text-yellow-600 mr-4 shrink-0">
+                      <i class="fa fa-clock-o"></i>
                     </div>
                     <div>
-                      <h4 class="font-bold text-lg mb-2">② 命名更新</h4>
-                      <p class="text-neutral-500">优化部分功能模块命名，提升界面可读性和操作一致性。</p>
+                      <h4 class="font-bold text-lg mb-2">② AI思考时间优化</h4>
+                      <p class="text-neutral-500">优化模型响应速度，平均思考时间缩短30%，复杂任务处理效率显著提升。</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-neutral-50 rounded-xl p-5 border border-neutral-200 transition-all duration-300 hover:shadow-md hover:translate-y-[-5px]">
+                  <div class="flex items-start">
+                    <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 mr-4 shrink-0">
+                      <i class="fa fa-brain"></i>
+                    </div>
+                    <div>
+                      <h4 class="font-bold text-lg mb-2">③ AI大模型更新</h4>
+                      <p class="text-neutral-500">全面升级AI大模型，增强多轮对话连贯性和知识准确性，提升专业领域问答能力。</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-neutral-50 rounded-xl p-5 border border-neutral-200 transition-all duration-300 hover:shadow-md hover:translate-y-[-5px]">
+                  <div class="flex items-start">
+                    <div class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-red-600 mr-4 shrink-0">
+                      <i class="fa fa-bug"></i>
+                    </div>
+                    <div>
+                      <h4 class="font-bold text-lg mb-2">④ 细微修复</h4>
+                      <p class="text-neutral-500">修复了若干影响使用体验的细节问题，提升系统稳定性。</p>
                     </div>
                   </div>
                 </div>
@@ -162,6 +184,14 @@
           </h3>
 
   <div class="space-y-4">
+            <div class="bg-white rounded-xl p-4 border border-neutral-200 transition-all duration-300 hover:shadow-md">
+              <div class="flex justify-between items-center">
+                <h4 class="font-bold text-neutral-700">V1.2.5</h4>
+                <span class="text-sm text-neutral-500">2025年5月17日</span>
+              </div>
+              <p class="text-neutral-500 mt-2">本次更新包含若干细节优化与命名调整，提升系统稳定性和可读性。</p>
+            </div>
+
             <div class="bg-white rounded-xl p-4 border border-neutral-200 transition-all duration-300 hover:shadow-md">
               <div class="flex justify-between items-center">
                 <h4 class="font-bold text-neutral-700">V1.2.0</h4>
@@ -293,5 +323,4 @@
 
 </body>
 </html>
-    </doubaocanvas-part>
-</doubaocanvas>
+    
