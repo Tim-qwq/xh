@@ -65,6 +65,16 @@
                 from { transform: translateY(20px); opacity: 0; }
                 to { transform: translateY(0); opacity: 1; }
             }
+            .scale-in {
+                animation: scaleIn 0.3s ease-out;
+            }
+            @keyframes scaleIn {
+                from { transform: scale(0.9); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+            }
+            .blur-bg {
+                backdrop-filter: blur(5px);
+            }
         }
     </style>
 </head>
@@ -78,25 +88,30 @@
             </div>
             
             <!-- 动画按钮组 -->
-            <div class="flex items-center space-x-4">
-                <button id="gameBtn" class="btn-primary flex items-center space-x-2">
+            <div class="flex items-center space-x-2 md:space-x-4">
+                <button id="musicBtn" class="btn-primary flex items-center space-x-2 py-2 px-3 md:px-4">
+                    <i class="fa fa-music"></i>
+                    <span class="hidden sm:inline">歌曲播放</span>
+                </button>
+
+                <button id="gameBtn" class="btn-primary flex items-center space-x-2 py-2 px-3 md:px-4">
                     <i class="fa fa-gamepad"></i>
-                    <span>飞机小游戏</span>
+                    <span class="hidden sm:inline">飞机小游戏</span>
                 </button>
                 
-                <button id="photoBtn" class="btn-primary flex items-center space-x-2">
+                <button id="photoBtn" class="btn-primary flex items-center space-x-2 py-2 px-3 md:px-4">
                     <i class="fa fa-user-circle"></i>
-                    <span>个人照片</span>
+                    <span class="hidden sm:inline">个人照片</span>
                 </button>
                 
-                <button id="chatBtn" class="btn-secondary flex items-center space-x-2">
+                <button id="chatBtn" class="btn-secondary flex items-center space-x-2 py-2 px-3 md:px-4">
                     <i class="fa fa-comment"></i>
-                    <span>DeepSeek大模型</span>
+                    <span class="hidden sm:inline">DeepSeek大模型</span>
                 </button>
                 
-                <button id="joinBtn" class="btn-accent flex items-center space-x-2">
+                <button id="joinBtn" class="btn-accent flex items-center space-x-2 py-2 px-3 md:px-4">
                     <i class="fa fa-users"></i>
-                    <span>入群按钮</span>
+                    <span class="hidden sm:inline">入群按钮</span>
                 </button>
             </div>
         </div>
@@ -209,7 +224,7 @@
     <footer class="bg-white shadow-inner py-6">
         <div class="container mx-auto px-4 text-center text-gray-600 text-sm">
             <p>© 2025 向华公安部 版权所有</p>
-            <p>版本号：V2.0.0</p>
+            <p>版本号：V1.3.1</p>
             <p class="mt-1">联系方式: M13423978947@163.com</p>
         </div>
     </footer>
@@ -239,216 +254,355 @@
         </div>
     </div>
 
+    <!-- 歌曲播放弹窗 -->
+    <div id="musicModal" class="fixed inset-0 bg-black bg-opacity-70 blur-bg z-50 hidden">
+        <div class="flex items-center justify-center h-full p-4">
+            <div class="bg-white rounded-xl shadow-lg w-full max-w-md scale-in">
+                <div class="relative">
+                    <button id="closeMusic" class="absolute top-4 right-4 text-gray-600 hover:text-gray-800 z-10">
+                        <i class="fa fa-times"></i>
+                    </button>
+                    
+                    <div class="p-6">
+                        <div class="text-center mb-4">
+                            <img src="https://picsum.photos/seed/music/200/200" alt="歌曲封面" class="w-32 h-32 mx-auto rounded-lg shadow-md">
+                            <h2 class="text-xl font-bold text-dark mt-3">向华之歌</h2>
+                            <p class="text-sm text-gray-500">向华公安部</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <audio id="musicPlayer" controls class="w-full">
+                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+                                你的浏览器不支持音频播放。
+                            </audio>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2">
+                            <button id="prevMusic" class="btn-secondary flex items-center justify-center py-2">
+                                <i class="fa fa-step-backward"></i>
+                            </button>
+                            <button id="playMusic" class="btn-primary flex items-center justify-center py-2">
+                                <i class="fa fa-play"></i>
+                            </button>
+                            <button id="nextMusic" class="btn-secondary flex items-center justify-center py-2">
+                                <i class="fa fa-step-forward"></i>
+                            </button>
+                        </div>
+                        
+                        <p class="text-xs text-gray-500 mt-4 text-center">
+                            提示：点击右上角关闭按钮退出播放
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-       // DeepSeek API 配置
-const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
-const DEEPSEEK_API_KEY = "sk-ea4d7824986f414a8df145151f4af0d8"; // 替换为你的实际API密钥
-
-// 存储对话历史
-let conversationHistory = [
-    {
-        role: "system",
-        content: "你是一个乐于助人的AI助手"
-    }
-];
-
-// 检查关键词并返回匹配的回复（保留作为后备）
-const keywordReplies = {
-    // ... 保留原有的关键词回复对象 ...
-};
-
-// 获取随机思考时间 (1-3秒)
-function getRandomThinkTime() {
-    return Math.floor(Math.random() * 2000) + 1000;
-}
-
-// 调用DeepSeek API
-async function callDeepSeekAPI(message) {
-    // 添加用户消息到对话历史
-    conversationHistory.push({
-        role: "user",
-        content: message
-    });
-    
-    try {
-        const response = await fetch(DEEPSEEK_API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${DEEPSEEK_API_KEY}`
+        // 歌曲列表
+        const songs = [
+            {
+                title: "大笨钟",
+                artist: "周杰伦",
+                cover: "https://tse2-mm.cn.bing.net/th/id/OIP-C.TLlfXB5y8xlIqqVtv08twwHaHa?w=192&h=192&c=7&r=0&o=7&cb=iwp2&dpr=1.5&pid=1.7&rm=3",
+                src: "M500002jkBM53MLB9Q.mp3"
             },
-            body: JSON.stringify({
-                model: "deepseek-chat",
-                messages: conversationHistory,
-                temperature: 0.7,
-                max_tokens: 2000
-            })
+            {
+                title: "最后一页",
+                artist: "江语晨",
+                cover: "https://tse3-mm.cn.bing.net/th/id/OIP-C.ifTwJhHsXCezUbUmz2zXSgHaHa?w=202&h=202&c=7&r=0&o=7&cb=iwp2&dpr=1.5&pid=1.7&rm=3",
+                src: "https://cr-sycdn.kuwo.cn/5bb1f6eadbf9fa508273503d8b51b027/6830707a/resource/n1/41/70/1775619547.mp3?bitrate$128&from=vip"
+            },
+            {
+                title: "枫",
+                artist: "周杰伦",
+                cover: "https://tse4-mm.cn.bing.net/th/id/OIP-C.JM_N9m8Y6P6IW4tihpDvjwHaHa?w=155&h=180&c=7&r=0&o=7&cb=iwp2&dpr=1.5&pid=1.7&rm=3",
+                src: "M500003KtYhg4frNXC.mp3"
+            }
+        ];
+        
+        let currentSongIndex = 0;
+        const musicPlayer = document.getElementById('musicPlayer');
+        const playButton = document.getElementById('playMusic');
+        const musicTitle = document.querySelector('#musicModal h2');
+        const musicArtist = document.querySelector('#musicModal p');
+        const musicCover = document.querySelector('#musicModal img');
+        
+        // 更新音乐信息
+        function updateMusicInfo() {
+            const song = songs[currentSongIndex];
+            musicTitle.textContent = song.title;
+            musicArtist.textContent = song.artist;
+            musicCover.src = song.cover;
+            musicPlayer.src = song.src;
+        }
+        
+        // 歌曲播放按钮点击事件
+        document.getElementById('musicBtn').addEventListener('click', function() {
+            const musicModal = document.getElementById('musicModal');
+            musicModal.classList.remove('hidden');
+            updateMusicInfo();
+            musicPlayer.load();
         });
         
-        if (!response.ok) {
-            throw new Error(`API请求失败: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        const assistantReply = data.choices[0].message.content;
-        
-        // 添加助手回复到对话历史
-        conversationHistory.push({
-            role: "assistant",
-            content: assistantReply
+        // 关闭歌曲播放弹窗
+        document.getElementById('closeMusic').addEventListener('click', function() {
+            const musicModal = document.getElementById('musicModal');
+            musicModal.classList.add('hidden');
+            musicPlayer.pause();
         });
         
-        // 限制对话历史长度以避免过大
-        if (conversationHistory.length > 10) {
-            conversationHistory = conversationHistory.slice(-10);
+        // 点击弹窗背景关闭
+        document.getElementById('musicModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                this.classList.add('hidden');
+                musicPlayer.pause();
+            }
+        });
+        
+        // 播放/暂停按钮
+        playButton.addEventListener('click', function() {
+            if (musicPlayer.paused) {
+                musicPlayer.play();
+                playButton.innerHTML = '<i class="fa fa-pause"></i>';
+            } else {
+                musicPlayer.pause();
+                playButton.innerHTML = '<i class="fa fa-play"></i>';
+            }
+        });
+        
+        // 上一首
+        document.getElementById('prevMusic').addEventListener('click', function() {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            updateMusicInfo();
+            musicPlayer.play();
+            playButton.innerHTML = '<i class="fa fa-pause"></i>';
+        });
+        
+        // 下一首
+        document.getElementById('nextMusic').addEventListener('click', function() {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            updateMusicInfo();
+            musicPlayer.play();
+            playButton.innerHTML = '<i class="fa fa-pause"></i>';
+        });
+        
+        // 音乐播放结束自动下一首
+        musicPlayer.addEventListener('ended', function() {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            updateMusicInfo();
+            musicPlayer.play();
+        });
+        
+        // DeepSeek API 配置
+        const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
+        const DEEPSEEK_API_KEY = "sk-ea4d7824986f414a8df145151f4af0d8"; // 替换为你的实际API密钥
+        
+        // 存储对话历史
+        let conversationHistory = [
+            {
+                role: "system",
+                content: "你是一个乐于助人的AI助手"
+            }
+        ];
+        
+        // 检查关键词并返回匹配的回复（保留作为后备）
+        const keywordReplies = {
+            // ... 保留原有的关键词回复对象 ...
+        };
+        
+        // 获取随机思考时间 (1-3秒)
+        function getRandomThinkTime() {
+            return Math.floor(Math.random() * 2000) + 1000;
         }
         
-        return assistantReply;
-    } catch (error) {
-        console.error("DeepSeek API调用失败:", error);
-        // 如果API调用失败，回退到关键词回复
-        return checkKeywords(message);
-    }
-}
-
-// 检查关键词（作为API调用失败时的后备）
-function checkKeywords(message) {
-    const lowerMessage = message.toLowerCase();
-    for (const keyword in keywordReplies) {
-        if (lowerMessage.includes(keyword.toLowerCase())) {
-            return keywordReplies[keyword];
-        }
-    }
-    return "我不理解你的意思？请尝试用其他方式提问。";
-}
-
-// 飞机小游戏按钮点击事件
-document.getElementById('gameBtn').addEventListener('click', function() {
-    window.location.href = 'https://tim-qwq.github.io/xh/index02.html';
-});
-
-// 个人照片按钮点击事件
-document.getElementById('photoBtn').addEventListener('click', function() {
-    window.location.href = 'https://tim-qwq.github.io/xh/index01.html';
-});
-
-// DeepSeek大模型按钮点击事件
-document.getElementById('chatBtn').addEventListener('click', function() {
-    const chatWindow = document.getElementById('chatWindow');
-    chatWindow.classList.remove('scale-0', 'opacity-0');
-    chatWindow.classList.add('scale-100', 'opacity-100');
-});
-
-// 关闭聊天窗口
-document.getElementById('closeChat').addEventListener('click', function() {
-    const chatWindow = document.getElementById('chatWindow');
-    chatWindow.classList.remove('scale-100', 'opacity-100');
-    chatWindow.classList.add('scale-0', 'opacity-0');
-});
-
-// 发送消息
-async function sendMessage() {
-    const userInput = document.getElementById('userInput');
-    const message = userInput.value.trim();
-    
-    if (message === '') return;
-    
-    const chatMessages = document.getElementById('chatMessages');
-    
-    // 添加用户消息
-    const userMessage = document.createElement('div');
-    userMessage.className = 'flex justify-end';
-    userMessage.innerHTML = `
-        <div class="bg-primary text-white rounded-lg p-2 shadow-sm max-w-[80%] fade-in">
-            <p class="text-sm">${message}</p>
-        </div>
-    `;
-    chatMessages.appendChild(userMessage);
-    
-    // 清空输入框
-    userInput.value = '';
-    
-    // 添加"正在思考..."提示
-    const thinkingMessage = document.createElement('div');
-    thinkingMessage.className = 'flex justify-start';
-    thinkingMessage.innerHTML = `
-        <div class="bg-white rounded-lg p-2 shadow-sm max-w-[80%] slide-up">
-            <p class="text-sm text-gray-500">正在思考<span id="thinkingDots">...</span></p>
-        </div>
-    `;
-    chatMessages.appendChild(thinkingMessage);
-    
-    // 滚动到底部
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    
-    // 思考动画
-    const dotsElement = thinkingMessage.querySelector('#thinkingDots');
-    let dotCount = 0;
-    const dotInterval = setInterval(() => {
-        dotCount = (dotCount + 1) % 4;
-        dotsElement.textContent = '.'.repeat(dotCount);
-    }, 500);
-    
-    // 获取随机思考时间
-    const thinkTime = getRandomThinkTime();
-    
-    try {
         // 调用DeepSeek API
-        const reply = await callDeepSeekAPI(message);
+        async function callDeepSeekAPI(message) {
+            // 添加用户消息到对话历史
+            conversationHistory.push({
+                role: "user",
+                content: message
+            });
+            
+            try {
+                const response = await fetch(DEEPSEEK_API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${DEEPSEEK_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek-chat",
+                        messages: conversationHistory,
+                        temperature: 0.7,
+                        max_tokens: 2000
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const assistantReply = data.choices[0].message.content;
+                
+                // 添加助手回复到对话历史
+                conversationHistory.push({
+                    role: "assistant",
+                    content: assistantReply
+                });
+                
+                // 限制对话历史长度以避免过大
+                if (conversationHistory.length > 10) {
+                    conversationHistory = conversationHistory.slice(-10);
+                }
+                
+                return assistantReply;
+            } catch (error) {
+                console.error("DeepSeek API调用失败:", error);
+                // 如果API调用失败，回退到关键词回复
+                return checkKeywords(message);
+            }
+        }
         
-        // 清除思考动画
-        clearInterval(dotInterval);
+        // 检查关键词（作为API调用失败时的后备）
+        function checkKeywords(message) {
+            const lowerMessage = message.toLowerCase();
+            for (const keyword in keywordReplies) {
+                if (lowerMessage.includes(keyword.toLowerCase())) {
+                    return keywordReplies[keyword];
+                }
+            }
+            return "我不理解你的意思？请尝试用其他方式提问。";
+        }
         
-        // 移除"正在思考..."提示
-        chatMessages.removeChild(thinkingMessage);
+        // 飞机小游戏按钮点击事件
+        document.getElementById('gameBtn').addEventListener('click', function() {
+            window.location.href = 'https://tim-qwq.github.io/xh/index02.html';
+        });
         
-        // 添加回复
-        const replyMessage = document.createElement('div');
-        replyMessage.className = 'flex justify-start';
-        replyMessage.innerHTML = `
-            <div class="bg-white rounded-lg p-2 shadow-sm max-w-[80%] slide-up">
-                <p class="text-sm text-gray-800">${reply}</p>
-            </div>
-        `;
-        chatMessages.appendChild(replyMessage);
+        // 个人照片按钮点击事件
+        document.getElementById('photoBtn').addEventListener('click', function() {
+            window.location.href = 'https://tim-qwq.github.io/xh/index01.html';
+        });
         
-    } catch (error) {
-        console.error("发送消息时出错:", error);
-        // 清除思考动画
-        clearInterval(dotInterval);
+        // DeepSeek大模型按钮点击事件
+        document.getElementById('chatBtn').addEventListener('click', function() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.remove('scale-0', 'opacity-0');
+            chatWindow.classList.add('scale-100', 'opacity-100');
+        });
         
-        // 移除"正在思考..."提示
-        chatMessages.removeChild(thinkingMessage);
+        // 关闭聊天窗口
+        document.getElementById('closeChat').addEventListener('click', function() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.remove('scale-100', 'opacity-100');
+            chatWindow.classList.add('scale-0', 'opacity-0');
+        });
         
-        // 添加错误提示
-        const errorMessage = document.createElement('div');
-        errorMessage.className = 'flex justify-start';
-        errorMessage.innerHTML = `
-            <div class="bg-red-100 text-red-800 rounded-lg p-2 shadow-sm max-w-[80%] slide-up">
-                <p class="text-sm">抱歉，服务暂时不可用，请稍后再试。</p>
-            </div>
-        `;
-        chatMessages.appendChild(errorMessage);
-    }
-    
-    // 滚动到底部
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-// 发送消息按钮点击事件
-document.getElementById('sendBtn').addEventListener('click', sendMessage);
-
-// 回车键发送消息
-document.getElementById('userInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        sendMessage();
-    }
-});
-
-// 入群按钮点击事件
-document.getElementById('joinBtn').addEventListener('click', function() {
-    window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=dEKudygGvvibsqCudG9oJnDyW0oNBTr%2BlhTxhZTFS25dCwOcQPPK41I6sdqxRtZa&busi_data=eyJncm91cENvZGUiOiIxMDI4ODQ3MTQzIiwidG9rZW4iOiI0Sy9hdkd6dDM0TERSSUtxS3VxSmI1WnRIY2pJTEQ4WFJ2ZGg2WUU3a1A2TGhiZ3B6Qk9YRmpYZEtHWjBzWHVzIiwidWluIjoiMjI5NTQzNDA0MiJ9&data=OmpyxumP08TF4VDq1wzuMT7FR8xtrZnWzuFFAi_57Y695gDT17US8lu5__Lv2NpJZRA7a_id7TuxV_ZjMoA3CA&svctype=4&tempid=h5_group_info';
-});
-   </script>
+        // 发送消息
+        async function sendMessage() {
+            const userInput = document.getElementById('userInput');
+            const message = userInput.value.trim();
+            
+            if (message === '') return;
+            
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // 添加用户消息
+            const userMessage = document.createElement('div');
+            userMessage.className = 'flex justify-end';
+            userMessage.innerHTML = `
+                <div class="bg-primary text-white rounded-lg p-2 shadow-sm max-w-[80%] fade-in">
+                    <p class="text-sm">${message}</p>
+                </div>
+            `;
+            chatMessages.appendChild(userMessage);
+            
+            // 清空输入框
+            userInput.value = '';
+            
+            // 添加"正在思考..."提示
+            const thinkingMessage = document.createElement('div');
+            thinkingMessage.className = 'flex justify-start';
+            thinkingMessage.innerHTML = `
+                <div class="bg-white rounded-lg p-2 shadow-sm max-w-[80%] slide-up">
+                    <p class="text-sm text-gray-500">正在思考<span id="thinkingDots">...</span></p>
+                </div>
+            `;
+            chatMessages.appendChild(thinkingMessage);
+            
+            // 滚动到底部
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // 思考动画
+            const dotsElement = thinkingMessage.querySelector('#thinkingDots');
+            let dotCount = 0;
+            const dotInterval = setInterval(() => {
+                dotCount = (dotCount + 1) % 4;
+                dotsElement.textContent = '.'.repeat(dotCount);
+            }, 500);
+            
+            // 获取随机思考时间
+            const thinkTime = getRandomThinkTime();
+            
+            try {
+                // 调用DeepSeek API
+                const reply = await callDeepSeekAPI(message);
+                
+                // 清除思考动画
+                clearInterval(dotInterval);
+                
+                // 移除"正在思考..."提示
+                chatMessages.removeChild(thinkingMessage);
+                
+                // 添加回复
+                const replyMessage = document.createElement('div');
+                replyMessage.className = 'flex justify-start';
+                replyMessage.innerHTML = `
+                    <div class="bg-white rounded-lg p-2 shadow-sm max-w-[80%] slide-up">
+                        <p class="text-sm text-gray-800">${reply}</p>
+                    </div>
+                `;
+                chatMessages.appendChild(replyMessage);
+                
+            } catch (error) {
+                console.error("发送消息时出错:", error);
+                // 清除思考动画
+                clearInterval(dotInterval);
+                
+                // 移除"正在思考..."提示
+                chatMessages.removeChild(thinkingMessage);
+                
+                // 添加错误提示
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'flex justify-start';
+                errorMessage.innerHTML = `
+                    <div class="bg-red-100 text-red-800 rounded-lg p-2 shadow-sm max-w-[80%] slide-up">
+                        <p class="text-sm">抱歉，服务暂时不可用，请稍后再试。</p>
+                    </div>
+                `;
+                chatMessages.appendChild(errorMessage);
+            }
+            
+            // 滚动到底部
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // 发送消息按钮点击事件
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        
+        // 回车键发送消息
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // 入群按钮点击事件
+        document.getElementById('joinBtn').addEventListener('click', function() {
+            window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=dEKudygGvvibsqCudG9oJnDyW0oNBTr%2BlhTxhZTFS25dCwOcQPPK41I6sdqxRtZa&busi_data=eyJncm91cENvZGUiOiIxMDI4ODQ3MTQzIiwidG9rZW4iOiI0Sy9hdkd6dDM0TERSSUtxS3VxSmI1WnRIY2pJTEQ4WFJ2ZGg2WUU3a1A2TGhiZ3B6Qk9YRmpYZEtHWjBzWHVzIiwidWluIjoiMjI5NTQzNDA0MiJ9&data=OmpyxumP08TF4VDq1wzuMT7FR8xtrZnWzuFFAi_57Y695gDT17US8lu5__Lv2NpJZRA7a_id7TuxV_ZjMoA3CA&svctype=4&tempid=h5_group_info';
+        });
+    </script>
 </body>
-</html>    
+</html>
