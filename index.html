@@ -240,147 +240,215 @@
     </div>
 
     <script>
-        // 关键词回复库
-        const keywordReplies = {
-            "聚会": "关于聚会的信息目前显示为无，如有更新会及时通知。",
-            "向华公安部": "此向华公安部并非真实公安部，是虚拟公安部，非正式公安组织，请知悉。",
-            "工程款": "当前显示的工程款为8元，具体情况可进一步咨询相关负责人。",
-            "路线": "目前有三种路线：望海帝国主义路线、向华主义路线和望海资本主义路线，详情可查看提示信息。",
-            "公告": "公告内容：此向华公安部，并非真实公安部，此公安部为虚拟公安部，非正式公安，望理解。",
-            "版本": "当前系统版本号为V1.2.5",
-            "联系方式": "联系方式为：M13423978947@163.com",
-            "叫爸爸": "爸爸~",
-            "游戏": "点击飞机小游戏按钮可进入游戏页面：https://tim-qwq.github.io/xh/index02.html",
-            "照片": "点击个人照片按钮可查看相关内容：https://tim-qwq.github.io/xh/index01.html",
-            "入群": "点击入群按钮可加入相关群组：https://qun.qq.com/universal-share/...",
-            "更新日志": "点击更新日志可查看系统更新情况：https://tim-qwq.github.io/xh/index03.html",
-            "公安部人员": "点击向华公安部人员可查看相关成员：https://tim-qwq.github.io/xh/index01.html"
-        };
+       // DeepSeek API 配置
+const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
+const DEEPSEEK_API_KEY = "sk-ea4d7824986f414a8df145151f4af0d8"; // 替换为你的实际API密钥
+
+// 存储对话历史
+let conversationHistory = [
+    {
+        role: "system",
+        content: "你是一个乐于助人的AI助手"
+    }
+];
+
+// 检查关键词并返回匹配的回复（保留作为后备）
+const keywordReplies = {
+    // ... 保留原有的关键词回复对象 ...
+};
+
+// 获取随机思考时间 (1-3秒)
+function getRandomThinkTime() {
+    return Math.floor(Math.random() * 2000) + 1000;
+}
+
+// 调用DeepSeek API
+async function callDeepSeekAPI(message) {
+    // 添加用户消息到对话历史
+    conversationHistory.push({
+        role: "user",
+        content: message
+    });
+    
+    try {
+        const response = await fetch(DEEPSEEK_API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${DEEPSEEK_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "deepseek-chat",
+                messages: conversationHistory,
+                temperature: 0.7,
+                max_tokens: 2000
+            })
+        });
         
-        // 检查关键词并返回匹配的回复
-        function checkKeywords(message) {
-            const lowerMessage = message.toLowerCase();
-            for (const keyword in keywordReplies) {
-                if (lowerMessage.includes(keyword.toLowerCase())) {
-                    return keywordReplies[keyword];
-                }
-            }
-            return "我不理解你的意思？";
+        if (!response.ok) {
+            throw new Error(`API请求失败: ${response.status}`);
         }
         
-        // 获取随机思考时间 (1-3秒)
-        function getRandomThinkTime() {
-            return Math.floor(Math.random() * 2000) + 1000; // 1000-3000ms
+        const data = await response.json();
+        const assistantReply = data.choices[0].message.content;
+        
+        // 添加助手回复到对话历史
+        conversationHistory.push({
+            role: "assistant",
+            content: assistantReply
+        });
+        
+        // 限制对话历史长度以避免过大
+        if (conversationHistory.length > 10) {
+            conversationHistory = conversationHistory.slice(-10);
         }
         
-        // 飞机小游戏按钮点击事件
-        document.getElementById('gameBtn').addEventListener('click', function() {
-            window.location.href = 'https://tim-qwq.github.io/xh/index02.html'; // 替换为实际游戏网址
-        });
-        
-        // 个人照片按钮点击事件
-        document.getElementById('photoBtn').addEventListener('click', function() {
-            window.location.href = 'https://tim-qwq.github.io/xh/index01.html';
-        });
-        
-        // DeepSeek大模型按钮点击事件
-        document.getElementById('chatBtn').addEventListener('click', function() {
-            const chatWindow = document.getElementById('chatWindow');
-            chatWindow.classList.remove('scale-0', 'opacity-0');
-            chatWindow.classList.add('scale-100', 'opacity-100');
-        });
-        
-        // 关闭聊天窗口
-        document.getElementById('closeChat').addEventListener('click', function() {
-            const chatWindow = document.getElementById('chatWindow');
-            chatWindow.classList.remove('scale-100', 'opacity-100');
-            chatWindow.classList.add('scale-0', 'opacity-0');
-        });
-        
-        // 发送消息
-        function sendMessage() {
-            const userInput = document.getElementById('userInput');
-            const message = userInput.value.trim();
-            
-            if (message === '') return;
-            
-            const chatMessages = document.getElementById('chatMessages');
-            
-            // 添加用户消息
-            const userMessage = document.createElement('div');
-            userMessage.className = 'flex justify-end';
-            userMessage.innerHTML = `
-                <div class="bg-primary text-white rounded-lg p-2 shadow-sm max-w-[80%] fade-in">
-                    <p class="text-sm">${message}</p>
-                </div>
-            `;
-            chatMessages.appendChild(userMessage);
-            
-            // 清空输入框
-            userInput.value = '';
-            
-            // 添加"正在思考..."提示
-            const thinkingMessage = document.createElement('div');
-            thinkingMessage.className = 'flex justify-start';
-            thinkingMessage.innerHTML = `
-                <div class="bg-white rounded-lg p-2 shadow-sm max-w-[80%] slide-up">
-                    <p class="text-sm text-gray-500">正在思考<span id="thinkingDots">...</span></p>
-                </div>
-            `;
-            chatMessages.appendChild(thinkingMessage);
-            
-            // 滚动到底部
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            
-            // 思考动画
-            const dotsElement = thinkingMessage.querySelector('#thinkingDots');
-            let dotCount = 0;
-            const dotInterval = setInterval(() => {
-                dotCount = (dotCount + 1) % 4;
-                dotsElement.textContent = '.'.repeat(dotCount);
-            }, 500);
-            
-            // 获取随机思考时间
-            const thinkTime = getRandomThinkTime();
-            
-            // 模拟回复延迟
-            setTimeout(() => {
-                // 清除思考动画
-                clearInterval(dotInterval);
-                
-                // 移除"正在思考..."提示
-                chatMessages.removeChild(thinkingMessage);
-                
-                // 添加回复
-                const reply = checkKeywords(message);
-                const replyMessage = document.createElement('div');
-                replyMessage.className = 'flex justify-start';
-                replyMessage.innerHTML = `
-                    <div class="bg-white rounded-lg p-2 shadow-sm max-w-[80%] slide-up">
-                        <p class="text-sm text-gray-800">${reply}</p>
-                    </div>
-                `;
-                chatMessages.appendChild(replyMessage);
-                
-                // 滚动到底部
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, thinkTime);
+        return assistantReply;
+    } catch (error) {
+        console.error("DeepSeek API调用失败:", error);
+        // 如果API调用失败，回退到关键词回复
+        return checkKeywords(message);
+    }
+}
+
+// 检查关键词（作为API调用失败时的后备）
+function checkKeywords(message) {
+    const lowerMessage = message.toLowerCase();
+    for (const keyword in keywordReplies) {
+        if (lowerMessage.includes(keyword.toLowerCase())) {
+            return keywordReplies[keyword];
         }
+    }
+    return "我不理解你的意思？请尝试用其他方式提问。";
+}
+
+// 飞机小游戏按钮点击事件
+document.getElementById('gameBtn').addEventListener('click', function() {
+    window.location.href = 'https://tim-qwq.github.io/xh/index02.html';
+});
+
+// 个人照片按钮点击事件
+document.getElementById('photoBtn').addEventListener('click', function() {
+    window.location.href = 'https://tim-qwq.github.io/xh/index01.html';
+});
+
+// DeepSeek大模型按钮点击事件
+document.getElementById('chatBtn').addEventListener('click', function() {
+    const chatWindow = document.getElementById('chatWindow');
+    chatWindow.classList.remove('scale-0', 'opacity-0');
+    chatWindow.classList.add('scale-100', 'opacity-100');
+});
+
+// 关闭聊天窗口
+document.getElementById('closeChat').addEventListener('click', function() {
+    const chatWindow = document.getElementById('chatWindow');
+    chatWindow.classList.remove('scale-100', 'opacity-100');
+    chatWindow.classList.add('scale-0', 'opacity-0');
+});
+
+// 发送消息
+async function sendMessage() {
+    const userInput = document.getElementById('userInput');
+    const message = userInput.value.trim();
+    
+    if (message === '') return;
+    
+    const chatMessages = document.getElementById('chatMessages');
+    
+    // 添加用户消息
+    const userMessage = document.createElement('div');
+    userMessage.className = 'flex justify-end';
+    userMessage.innerHTML = `
+        <div class="bg-primary text-white rounded-lg p-2 shadow-sm max-w-[80%] fade-in">
+            <p class="text-sm">${message}</p>
+        </div>
+    `;
+    chatMessages.appendChild(userMessage);
+    
+    // 清空输入框
+    userInput.value = '';
+    
+    // 添加"正在思考..."提示
+    const thinkingMessage = document.createElement('div');
+    thinkingMessage.className = 'flex justify-start';
+    thinkingMessage.innerHTML = `
+        <div class="bg-white rounded-lg p-2 shadow-sm max-w-[80%] slide-up">
+            <p class="text-sm text-gray-500">正在思考<span id="thinkingDots">...</span></p>
+        </div>
+    `;
+    chatMessages.appendChild(thinkingMessage);
+    
+    // 滚动到底部
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // 思考动画
+    const dotsElement = thinkingMessage.querySelector('#thinkingDots');
+    let dotCount = 0;
+    const dotInterval = setInterval(() => {
+        dotCount = (dotCount + 1) % 4;
+        dotsElement.textContent = '.'.repeat(dotCount);
+    }, 500);
+    
+    // 获取随机思考时间
+    const thinkTime = getRandomThinkTime();
+    
+    try {
+        // 调用DeepSeek API
+        const reply = await callDeepSeekAPI(message);
         
-        // 发送消息按钮点击事件
-        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        // 清除思考动画
+        clearInterval(dotInterval);
         
-        // 回车键发送消息
-        document.getElementById('userInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
+        // 移除"正在思考..."提示
+        chatMessages.removeChild(thinkingMessage);
         
-        // 入群按钮点击事件
-        document.getElementById('joinBtn').addEventListener('click', function() {
-            window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=dEKudygGvvibsqCudG9oJnDyW0oNBTr%2BlhTxhZTFS25dCwOcQPPK41I6sdqxRtZa&busi_data=eyJncm91cENvZGUiOiIxMDI4ODQ3MTQzIiwidG9rZW4iOiI0Sy9hdkd6dDM0TERSSUtxS3VxSmI1WnRIY2pJTEQ4WFJ2ZGg2WUU3a1A2TGhiZ3B6Qk9YRmpYZEtHWjBzWHVzIiwidWluIjoiMjI5NTQzNDA0MiJ9&data=OmpyxumP08TF4VDq1wzuMT7FR8xtrZnWzuFFAi_57Y695gDT17US8lu5__Lv2NpJZRA7a_id7TuxV_ZjMoA3CA&svctype=4&tempid=h5_group_info';
-        });
-    </script>
+        // 添加回复
+        const replyMessage = document.createElement('div');
+        replyMessage.className = 'flex justify-start';
+        replyMessage.innerHTML = `
+            <div class="bg-white rounded-lg p-2 shadow-sm max-w-[80%] slide-up">
+                <p class="text-sm text-gray-800">${reply}</p>
+            </div>
+        `;
+        chatMessages.appendChild(replyMessage);
+        
+    } catch (error) {
+        console.error("发送消息时出错:", error);
+        // 清除思考动画
+        clearInterval(dotInterval);
+        
+        // 移除"正在思考..."提示
+        chatMessages.removeChild(thinkingMessage);
+        
+        // 添加错误提示
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'flex justify-start';
+        errorMessage.innerHTML = `
+            <div class="bg-red-100 text-red-800 rounded-lg p-2 shadow-sm max-w-[80%] slide-up">
+                <p class="text-sm">抱歉，服务暂时不可用，请稍后再试。</p>
+            </div>
+        `;
+        chatMessages.appendChild(errorMessage);
+    }
+    
+    // 滚动到底部
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// 发送消息按钮点击事件
+document.getElementById('sendBtn').addEventListener('click', sendMessage);
+
+// 回车键发送消息
+document.getElementById('userInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+// 入群按钮点击事件
+document.getElementById('joinBtn').addEventListener('click', function() {
+    window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=dEKudygGvvibsqCudG9oJnDyW0oNBTr%2BlhTxhZTFS25dCwOcQPPK41I6sdqxRtZa&busi_data=eyJncm91cENvZGUiOiIxMDI4ODQ3MTQzIiwidG9rZW4iOiI0Sy9hdkd6dDM0TERSSUtxS3VxSmI1WnRIY2pJTEQ4WFJ2ZGg2WUU3a1A2TGhiZ3B6Qk9YRmpYZEtHWjBzWHVzIiwidWluIjoiMjI5NTQzNDA0MiJ9&data=OmpyxumP08TF4VDq1wzuMT7FR8xtrZnWzuFFAi_57Y695gDT17US8lu5__Lv2NpJZRA7a_id7TuxV_ZjMoA3CA&svctype=4&tempid=h5_group_info';
+});
+   </script>
 </body>
 </html>    
