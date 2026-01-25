@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新向华 · jingyiwei1</title>
+    <meta name="description" content="新向华个人中心">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#722ED1',
+                        accent: '#FF7D00',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 4px 20px rgba(0, 0, 0, 0.08)',
+                        'hover': '0 8px 30px rgba(0, 0, 0, 0.12)',
+                    },
+                    borderRadius: {
+                        'custom': '1.25rem',
+                    }
+                },
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @media (max-width: 640px) {
+            html { font-size: 14px; }
+        }
+        
+        @media (max-width: 768px) {
+            .btn-primary, .btn-secondary, .btn-accent {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+            .card-hover { transition: none; }
+            .card-hover:hover { transform: none; box-shadow: var(--tw-shadow-card); }
+        }
+        
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .btn-primary, .btn-secondary, .btn-accent {
+                padding: 0.625rem 1.25rem;
+            }
+        }
+        
+        @layer utilities {
+            .content-auto { content-visibility: auto; }
+            .btn-primary {
+                @apply bg-primary text-white font-medium py-2 px-4 rounded-custom transition-all duration-300 hover:bg-primary/90 hover:shadow-lg transform hover:-translate-y-1;
+            }
+            .btn-secondary {
+                @apply bg-secondary text-white font-medium py-2 px-4 rounded-custom transition-all duration-300 hover:bg-secondary/90 hover:shadow-lg transform hover:-translate-y-1;
+            }
+            .btn-accent {
+                @apply bg-accent text-white font-medium py-2 px-4 rounded-custom transition-all duration-300 hover:bg-accent/90 hover:shadow-lg transform hover:-translate-y-1;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-hover transform hover:-translate-y-1;
+            }
+            .fade-in { animation: fadeIn 0.5s ease-in-out; }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            .slide-up { animation: slideUp 0.5s ease-out; }
+            @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            .scale-in { animation: scaleIn 0.3s ease-out; }
+            @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+            .blur-bg { backdrop-filter: blur(5px); }
+            
+            @keyframes rainbowBorder {
+                0% { border-image: linear-gradient(to right, red, orange, yellow) 1; }
+                25% { border-image: linear-gradient(to right, yellow, green, blue) 1; }
+                50% { border-image: linear-gradient(to right, blue, indigo, violet) 1; }
+                75% { border-image: linear-gradient(to right, violet, red, orange) 1; }
+                100% { border-image: linear-gradient(to right, orange, yellow, green) 1; }
+            }
+            .rainbow-border {
+                border: 3px solid transparent;
+                border-radius: 1.25rem;
+                animation: rainbowBorder 5s linear infinite;
+            }
+        }
+    </style>
+</head>
+
+<body class="font-inter bg-neutral min-h-screen flex flex-col">
+    <!-- 头部导航栏 -->
+    <header class="bg-white shadow-md z-10 sticky top-0">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <img src="A257F81E81E3B0681F4A5A0810ABF69C.jpg" alt="Logo" class="w-10 h-10 rounded-full">
+                <h1 class="text-xl font-bold text-dark">新向华</h1>
+            </div>
+            
+            <button id="mobileMenuBtn" class="md:hidden text-dark p-2 rounded-lg hover:bg-gray-100">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+            
+            <div id="navButtons" class="hidden md:flex items-center space-x-2 md:space-x-4">
+                <button id="musicBtn" class="btn-primary flex items-center space-x-2 py-2 px-3 md:px-4">
+                    <i class="fa fa-music"></i>
+                    <span class="hidden sm:inline">歌曲播放</span>
+                </button>
+                <button id="gameBtn" class="btn-primary flex items-center space-x-2 py-2 px-3 md:px-4">
+                    <i class="fa fa-gamepad"></i>
+                    <span class="hidden sm:inline">飞机小游戏</span>
+                </button>
+                <button id="photoBtn" class="btn-primary flex items-center space-x-2 py-2 px-3 md:px-4">
+                    <i class="fa fa-user-circle"></i>
+                    <span class="hidden sm:inline">个人照片</span>
+                </button>
+                <button id="chatBtn" class="btn-secondary flex items-center space-x-2 py-2 px-3 md:px-4">
+                    <i class="fa fa-comment"></i>
+                    <span class="hidden sm:inline">DeepSeek大模型</span>
+                </button>
+                <button id="joinBtn" class="btn-accent flex items-center space-x-2 py-2 px-3 md:px-4">
+                    <i class="fa fa-users"></i>
+                    <span class="hidden sm:inline">入群按钮</span>
+                </button>
+            </div>
+        </div>
+        
+        <div id="mobileMenu" class="md:hidden hidden bg-white border-t border-gray-200 shadow-lg">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-2">
+                <button id="mobileMusicBtn" class="btn-primary flex items-center space-x-2 py-3 px-4 justify-center">
+                    <i class="fa fa-music"></i><span>歌曲播放</span>
+                </button>
+                <button id="mobileGameBtn" class="btn-primary flex items-center space-x-2 py-3 px-4 justify-center">
+                    <i class="fa fa-gamepad"></i><span>飞机小游戏</span>
+                </button>
+                <button id="mobilePhotoBtn" class="btn-primary flex items-center space-x-2 py-3 px-4 justify-center">
+                    <i class="fa fa-user-circle"></i><span>个人照片</span>
+                </button>
+                <button id="mobileChatBtn" class="btn-secondary flex items-center space-x-2 py-3 px-4 justify-center">
+                    <i class="fa fa-comment"></i><span>DeepSeek大模型</span>
+                </button>
+                <button id="mobileJoinBtn" class="btn-accent flex items-center space-x-2 py-3 px-4 justify-center">
+                    <i class="fa fa-users"></i><span>入群按钮</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 container mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
+        <!-- 侧边栏 -->
+        <aside class="w-full md:w-64 bg-white rounded-custom shadow-card p-4 md:sticky md:top-24 order-2 md:order-1">
+            <div class="flex items-center space-x-4 mb-6">
+                <img src="https://img.ixintu.com/download/jpg/20200821/2198029116a8173f41e008d967c80040_512_512.jpg!ys" alt="Profile" class="w-14 h-14 rounded-full border-2 border-primary">
+                <div>
+                    <h3 class="font-bold text-dark">jingyiwei1</h3>
+                    <p class="text-sm text-gray-500">一级特勤</p>
+                </div>
+            </div>
+            
+            <nav class="space-y-1">
+                <a href="#" class="block py-2 px-3 rounded-custom bg-primary/10 text-primary font-medium">
+                    <i class="fa fa-home mr-2"></i>首页
+                </a>
+                <a href="#" class="block py-2 px-3 rounded-custom hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-file-text mr-2"></i>文档
+                </a>
+                <a href="#" class="block py-2 px-3 rounded-custom hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-chart-bar mr-2"></i>统计
+                </a>
+                <a href="https://tim-qwq.github.io/xh/index03.html" class="block py-2 px-3 rounded-custom hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-cog mr-2"></i>更新日志
+                </a>
+                <a href="https://tim-qwq.github.io/xh/index04.html" class="block py-2 px-3 rounded-custom hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-users mr-2"></i>向华公安部人员
+                </a>
+                <a href="https://tim-qwq.github.io/xh/index04.html" class="block py-2 px-3 rounded-custom hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-download mr-2"></i>APP下载
+                </a>
+            </nav>
+        </aside>
+
+        <div class="flex-1 order-1 md:order-2">
+            <!-- 个人资料卡片区 -->
+            <div class="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-custom shadow-card p-6 mb-6">
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+                    <div class="flex-shrink-0">
+                        <img src="https://img.ixintu.com/download/jpg/20200821/2198029116a8173f41e008d967c80040_512_512.jpg!ys" alt="个人头像" class="w-24 h-24 rounded-full border-4 border-white shadow-lg">
+                    </div>
+                    <div class="text-center md:text-left flex-1">
+                        <div class="flex flex-col md:flex-row md:items-center gap-2 mb-2">
+                            <h2 class="text-2xl font-bold text-dark">jingyiwei1</h2>
+                            <span class="bg-primary/20 text-primary text-xs px-2 py-1 rounded-full">一级特勤</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">向华市市民</p>
+                        <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                            <div class="text-center">
+                                <div class="text-xl font-bold text-primary">Lv.0</div>
+                                <div class="text-xs text-gray-500">等级</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-xl font-bold text-secondary">0</div>
+                                <div class="text-xs text-gray-500">向华币</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-xl font-bold text-accent">0</div>
+                                <div class="text-xs text-gray-500">经验值</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-xl font-bold text-green-500">0</div>
+                                <div class="text-xs text-gray-500">活动</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <div class="lg:col-span-1 space-y-4">
+                    <!-- 个人信息卡片 -->
+                    <div class="bg-white rounded-custom shadow-card p-4">
+                        <h3 class="text-lg font-bold text-dark mb-3 flex items-center">
+                            <i class="fa fa-user-circle text-primary mr-2"></i>个人信息
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Roblox 名称</span>
+                                <span class="text-sm font-medium">jingyiwei1</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">群内职务</span>
+                                <span class="text-sm font-medium">一级特勤</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">VX 号</span>
+                                <span class="text-sm font-medium">未填写</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">QQ 号</span>
+                                <span class="text-sm font-medium">未填写</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">在职状态</span>
+                                <span class="text-sm font-medium">否</span>
+                            </div>
+                        </div>
+                        <button class="btn-primary w-full mt-4">
+                            <i class="fa fa-edit"></i> 编辑资料
+                        </button>
+                    </div>
+
+                    <!-- 成就徽章 -->
+                    <div class="bg-white rounded-custom shadow-card p-4">
+                        <h3 class="text-lg font-bold text-dark mb-3 flex items-center">
+                            <i class="fa fa-trophy text-accent mr-2"></i>成就徽章
+                        </h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="bg-yellow-50 p-2 rounded-custom text-center">
+                                <i class="fa fa-star text-yellow-500 text-xl"></i>
+                                <p class="text-xs mt-1">新成员</p>
+                            </div>
+                            <div class="bg-gray-100 p-2 rounded-custom text-center opacity-50">
+                                <i class="fa fa-lock text-gray-500 text-xl"></i>
+                                <p class="text-xs mt-1">待解锁</p>
+                            </div>
+                            <div class="bg-gray-100 p-2 rounded-custom text-center opacity-50">
+                                <i class="fa fa-lock text-gray-500 text-xl"></i>
+                                <p class="text-xs mt-1">待解锁</p>
+                            </div>
+                            <div class="bg-gray-100 p-2 rounded-custom text-center opacity-50">
+                                <i class="fa fa-lock text-gray-500 text-xl"></i>
+                                <p class="text-xs mt-1">待解锁</p>
+                            </div>
+                            <div class="bg-gray-100 p-2 rounded-custom text-center opacity-50">
+                                <i class="fa fa-lock text-gray-500 text-xl"></i>
+                                <p class="text-xs mt-1">待解锁</p>
+                            </div>
+                            <div class="bg-gray-100 p-2 rounded-custom text-center opacity-50">
+                                <i class="fa fa-lock text-gray-500 text-xl"></i>
+                                <p class="text-xs mt-1">待解锁</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 space-y-4">
+                    <!-- 个人动态 -->
+                    <div class="bg-white rounded-custom shadow-card p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-dark flex items-center">
+                                <i class="fa fa-newspaper text-primary mr-2"></i>个人动态
+                            </h3>
+                            <button class="text-sm text-primary hover:text-primary/80">查看全部</button>
+                        </div>
+                        <div class="flex items-center justify-center h-32">
+                            <div class="text-center text-gray-500">
+                                <i class="fa fa-inbox text-4xl mb-2"></i>
+                                <p class="text-lg font-medium">暂无动态</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 近期活动 -->
+                    <div class="bg-white rounded-custom shadow-card p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-dark flex items-center">
+                                <i class="fa fa-calendar-check text-secondary mr-2"></i>近期活动
+                            </h3>
+                            <button class="text-sm text-primary hover:text-primary/80">查看日历</button>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center p-2 hover:bg-gray-50 rounded-custom transition-colors">
+                                <div class="bg-blue-100 text-blue-800 text-center p-2 rounded-custom mr-3 w-12">
+                                    <div class="text-xs">1月</div>
+                                    <div class="font-bold">31</div>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-medium text-dark">春节线上活动</h4>
+                                    <p class="text-xs text-gray-500">晚上8:00 - 10:00</p>
+                                </div>
+                                <button class="text-primary hover:text-primary/80">
+                                    <i class="fa fa-arrow-right"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center p-2 hover:bg-gray-50 rounded-custom transition-colors">
+                                <div class="bg-gray-100 text-gray-800 text-center p-2 rounded-custom mr-3 w-12 opacity-50">
+                                    <div class="text-xs">无</div>
+                                    <div class="font-bold">无</div>
+                                </div>
+                                <div class="flex-1 opacity-50">
+                                    <h4 class="font-medium text-dark">无</h4>
+                                    <p class="text-xs text-gray-500">无</p>
+                                </div>
+                                <button class="text-gray-400">
+                                    <i class="fa fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 个人相册 -->
+                <div class="bg-white rounded-custom shadow-card p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-dark flex items-center">
+                            <i class="fa fa-images text-accent mr-2"></i>个人相册
+                        </h3>
+                        <button class="text-sm text-primary hover:text-primary/80">查看全部</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="aspect-square bg-gray-100 rounded-custom overflow-hidden relative group">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/4cc97cb02b1f4c718ddda6b22bdee7ba~tplv-a9rns2rl98-image.image?lk3s=8e244e95&amp;rcl=20260124222356F8B04F2240C4780EA797&amp;rrcfp=e75484ac&amp;x-expires=1769869436&amp;x-signature=1iN3j9X2FxvUBIXuTZujtbJSla0%3D" alt="照片1" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
+                                <i class="fa fa-search text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </div>
+                        </div>
+                        <div class="aspect-square bg-gray-100 rounded-custom overflow-hidden relative group">
+                            <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/008aa2605c46495b9ec6b5c2d21e83c0~tplv-a9rns2rl98-image.image?lk3s=8e244e95&amp;rcl=202601242224042D6BC58B1C00960B03E2&amp;rrcfp=e75484ac&amp;x-expires=1769869444&amp;x-signature=usZ3MptJNY3ep66bEhEjNWpGWGs%3D" alt="照片2" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
+                                <i class="fa fa-search text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </div>
+                        </div>
+                        <div class="aspect-square bg-gray-100 rounded-custom overflow-hidden relative group">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/86620d0b7afe4c72b1135a1bd04342df~tplv-a9rns2rl98-image.image?lk3s=8e244e95&amp;rcl=202601242224529192937382B4D00AE7DC&amp;rrcfp=e75484ac&amp;x-expires=1769869492&amp;x-signature=Y6yrXD%2F0GjwlaYVLcSOLKvrza5s%3D" alt="照片3" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
+                                <i class="fa fa-search text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </div>
+                        </div>
+                        <div class="aspect-square bg-gray-100 rounded-custom overflow-hidden relative group">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/df6d788f65984179a4c5865f35ab1308~tplv-a9rns2rl98-image.image?lk3s=8e244e95&amp;rcl=20260124222432ACEDA2C67396330C70A7&amp;rrcfp=e75484ac&amp;x-expires=1769869472&amp;x-signature=ryLz4I2jPjPN%2F3Z9w8O5ZmPjmKM%3D" alt="照片4" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
+                                <i class="fa fa-search text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </div>
+                        </div>
+                        <div class="aspect-square bg-gray-100 rounded-custom overflow-hidden relative group">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/b0c672fd007748989afafc9ef1088ffe~tplv-a9rns2rl98-image.image?lk3s=8e244e95&amp;rcl=20260124222444ACEDA2C67396330C70E6&amp;rrcfp=e75484ac&amp;x-expires=1769869484&amp;x-signature=PLHwZh%2FKOTcPg5guCF%2FJMqHFAhQ%3D" alt="照片5" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
+                                <i class="fa fa-search text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </div>
+                        </div>
+                        <div class="aspect-square bg-gray-100 rounded-custom overflow-hidden relative group flex items-center justify-center bg-primary/5 border-2 border-dashed border-primary/30">
+                            <div class="text-center text-primary/70">
+                                <i class="fa fa-plus text-2xl"></i>
+                                <p class="text-xs mt-1">添加照片</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 我的收藏 -->
+                <div class="bg-white rounded-custom shadow-card p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-dark flex items-center">
+                            <i class="fa fa-bookmark text-primary mr-2"></i>我的收藏
+                        </h3>
+                        <button class="text-sm text-primary hover:text-primary/80">管理收藏</button>
+                    </div>
+                    <div class="flex items-center justify-center h-40">
+                        <div class="text-center text-gray-500">
+                            <i class="fa fa-bookmark-o text-4xl mb-2"></i>
+                            <p class="text-lg font-medium">暂无收藏</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white shadow-inner py-6 rounded-t-custom">
+        <div class="container mx-auto px-4 text-center text-gray-600 text-sm">
+            <p>© 2025 向华公安部 版权所有</p>
+            <p>版本号：V2.5.0</p>
+            <p class="mt-1">联系方式: M13423978947@163.com</p>
+        </div>
+    </footer>
+
+    <!-- DeepSeek 大模型聊天窗口 -->
+    <div id="chatWindow" class="fixed bottom-20 right-6 w-80 sm:w-96 md:w-96 lg:w-96 bg-white rounded-custom shadow-lg overflow-hidden transform transition-all duration-500 scale-0 opacity-0 rainbow-border z-40">
+        <div class="bg-secondary text-white p-3 flex justify-between items-center rounded-t-custom">
+            <h3 class="font-bold">DeepSeek 大模型</h3>
+            <button id="closeChat" class="text-white hover:text-gray-200">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+        <div id="chatMessages" class="h-64 overflow-y-auto p-3 space-y-3 bg-gray-50">
+            <div class="flex justify-start">
+                <div class="bg-white rounded-custom p-2 shadow-sm max-w-[80%]">
+                    <p class="text-sm text-gray-800">你好！我是 DeepSeek 大模型，有什么可以帮助你的吗？</p>
+                </div>
+            </div>
+        </div>
+        <div class="p-3 border-t">
+            <div class="flex space-x-2">
+                <input id="userInput" type="text" placeholder="输入消息..." class="flex-1 border rounded-custom px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                <button id="sendBtn" class="btn-secondary rounded-custom">
+                    <i class="fa fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 歌曲播放弹窗 -->
+    <div id="musicModal" class="fixed inset-0 bg-black bg-opacity-70 blur-bg z-50 hidden">
+        <div class="flex items-center justify-center h-full p-4">
+            <div class="bg-white rounded-custom shadow-lg w-full max-w-md scale-in">
+                <div class="relative">
+                    <button id="closeMusic" class="absolute top-4 right-4 text-gray-600 hover:text-gray-800 z-10">
+                        <i class="fa fa-times"></i>
+                    </button>
+                    
+                    <div class="p-6">
+                        <div class="text-center mb-4">
+                            <img src="https://picsum.photos/seed/music/200/200" alt="歌曲封面" class="w-32 h-32 mx-auto rounded-custom shadow-md">
+                            <h2 class="text-xl font-bold text-dark mt-3">向华之歌</h2>
+                            <p class="text-sm text-gray-500">向华公安部</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <audio id="musicPlayer" controls="" class="w-full rounded-custom">
+                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+                                你的浏览器不支持音频播放。
+                            
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2">
+                            <button id="prevMusic" class="btn-secondary flex items-center justify-center py-2 rounded-custom">
+                                <i class="fa fa-step-backward"></i>
+                            </button>
+                            <button id="playMusic" class="btn-primary flex items-center justify-center py-2 rounded-custom">
+                                <i class="fa fa-play"></i>
+                            </button>
+                            <button id="nextMusic" class="btn-secondary flex items-center justify-center py-2 rounded-custom">
+                                <i class="fa fa-step-forward"></i>
+                            </button>
+                        </div>
+                        
+                        <p class="text-xs text-gray-500 mt-4 text-center">
+                            提示：点击右上角关闭按钮退出播放
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 歌曲列表
+        const songs = [
+            {
+                title: "大笨钟",
+                artist: "周杰伦",
+                cover: "https://tse2-mm.cn.bing.net/th/id/OIP-C.TLlfXB5y8xlIqqVtv08twwHaHa?w=192&h=192&c=7&r=0&o=7&cb=iwp2&dpr=1.5&pid=1.7&rm=3",
+                src: "M500002jkBM53MLB9Q.mp3"
+            },
+            {
+                title: "最后一页",
+                artist: "江语晨",
+                cover: "https://tse3-mm.cn.bing.net/th/id/OIP-C.ifTwJhHsXCezUbUmz2zXSgHaHa?w=202&h=202&c=7&r=0&o=7&cb=iwp2&dpr=1.5&pid=1.7&rm=3",
+                src: "https://cr-sycdn.kuwo.cn/5bb1f6eadbf9fa508273503d8b51b027/6830707a/resource/n1/41/70/1775619547.mp3?bitrate$128&from=vip"
+            },
+            {
+                title: "枫",
+                artist: "周杰伦",
+                cover: "https://tse4-mm.cn.bing.net/th/id/OIP-C.JM_N9m8Y6P6IW4tihpDvjwHaHa?w=155&h=180&c=7&r=0&o=7&cb=iwp2&dpr=1.5&pid=1.7&rm=3",
+                src: "M500003KtYhg4frNXC.mp3"
+            }
+        ];
+        
+        let currentSongIndex = 0;
+        const musicPlayer = document.getElementById('musicPlayer');
+        const playButton = document.getElementById('playMusic');
+        const musicTitle = document.querySelector('#musicModal h2');
+        const musicArtist = document.querySelector('#musicModal p');
+        const musicCover = document.querySelector('#musicModal img');
+        
+        function updateMusicInfo() {
+            const song = songs[currentSongIndex];
+            musicTitle.textContent = song.title;
+            musicArtist.textContent = song.artist;
+            musicCover.src = song.cover;
+            musicPlayer.src = song.src;
+        }
+        
+        document.getElementById('musicBtn').addEventListener('click', function() {
+            const musicModal = document.getElementById('musicModal');
+            musicModal.classList.remove('hidden');
+            updateMusicInfo();
+            musicPlayer.load();
+        });
+        
+        document.getElementById('closeMusic').addEventListener('click', function() {
+            const musicModal = document.getElementById('musicModal');
+            musicModal.classList.add('hidden');
+            musicPlayer.pause();
+        });
+        
+        document.getElementById('musicModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                this.classList.add('hidden');
+                musicPlayer.pause();
+            }
+        });
+        
+        playButton.addEventListener('click', function() {
+            if (musicPlayer.paused) {
+                musicPlayer.play();
+                playButton.innerHTML = '<i class="fa fa-pause"></i>';
+            } else {
+                musicPlayer.pause();
+                playButton.innerHTML = '<i class="fa fa-play"></i>';
+            }
+        });
+        
+        document.getElementById('prevMusic').addEventListener('click', function() {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            updateMusicInfo();
+            musicPlayer.play();
+            playButton.innerHTML = '<i class="fa fa-pause"></i>';
+        });
+        
+        document.getElementById('nextMusic').addEventListener('click', function() {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            updateMusicInfo();
+            musicPlayer.play();
+            playButton.innerHTML = '<i class="fa fa-pause"></i>';
+        });
+        
+        musicPlayer.addEventListener('ended', function() {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            updateMusicInfo();
+            musicPlayer.play();
+        });
+        
+        // DeepSeek API
+        const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
+        const DEEPSEEK_API_KEY = "sk-ea4d7824986f414a8df145151f4af0d8";
+        
+        let conversationHistory = [
+            { role: "system", content: "你是一个乐于助人的AI助手" }
+        ];
+        
+        async function callDeepSeekAPI(message) {
+            conversationHistory.push({ role: "user", content: message });
+            
+            try {
+                const response = await fetch(DEEPSEEK_API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${DEEPSEEK_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek-chat",
+                        messages: conversationHistory,
+                        temperature: 0.7,
+                        max_tokens: 2000
+                    })
+                });
+                
+                if (!response.ok) throw new Error(`API请求失败: ${response.status}`);
+                
+                const data = await response.json();
+                const reply = data.choices[0].message.content;
+                conversationHistory.push({ role: "assistant", content: reply });
+                
+                if (conversationHistory.length > 10) conversationHistory = conversationHistory.slice(-10);
+                
+                return reply;
+            } catch (error) {
+                console.error("DeepSeek API失败:", error);
+                return "抱歉，服务暂时不可用，请稍后再试。";
+            }
+        }
+        
+        document.getElementById('gameBtn').addEventListener('click', function() {
+            window.location.href = 'https://tim-qwq.github.io/xh/index06.html';
+        });
+        
+        document.getElementById('photoBtn').addEventListener('click', function() {
+            window.location.href = 'https://tim-qwq.github.io/xh/index06.html';
+        });
+        
+        document.getElementById('chatBtn').addEventListener('click', function() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.remove('scale-0', 'opacity-0');
+            chatWindow.classList.add('scale-100', 'opacity-100');
+        });
+        
+        document.getElementById('closeChat').addEventListener('click', function() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.remove('scale-100', 'opacity-100');
+            chatWindow.classList.add('scale-0', 'opacity-0');
+        });
+        
+        function optimizeChatWindowForMobile() {
+            const chatWindow = document.getElementById('chatWindow');
+            if (window.innerWidth < 640) {
+                chatWindow.style.bottom = '10px';
+                chatWindow.style.right = '10px';
+                chatWindow.style.left = '10px';
+                chatWindow.style.width = 'auto';
+                chatWindow.style.maxWidth = 'calc(100% - 20px)';
+            } else {
+                chatWindow.style.bottom = '80px';
+                chatWindow.style.right = '24px';
+                chatWindow.style.left = 'auto';
+                chatWindow.style.width = '384px';
+                chatWindow.style.maxWidth = '384px';
+            }
+        }
+        
+        window.addEventListener('load', optimizeChatWindowForMobile);
+        window.addEventListener('resize', optimizeChatWindowForMobile);
+        
+        async function sendMessage() {
+            const userInput = document.getElementById('userInput');
+            const message = userInput.value.trim();
+            if (!message) return;
+            
+            const chatMessages = document.getElementById('chatMessages');
+            
+            const userMessage = document.createElement('div');
+            userMessage.className = 'flex justify-end';
+            userMessage.innerHTML = `
+                <div class="bg-primary text-white rounded-custom p-2 shadow-sm max-w-[80%] fade-in">
+                    <p class="text-sm">${message}</p>
+                </div>
+            `;
+            chatMessages.appendChild(userMessage);
+            userInput.value = '';
+            
+            const thinkingMessage = document.createElement('div');
+            thinkingMessage.className = 'flex justify-start';
+            thinkingMessage.innerHTML = `
+                <div class="bg-white rounded-custom p-2 shadow-sm max-w-[80%] slide-up">
+                    <p class="text-sm text-gray-500">正在思考<span id="thinkingDots">...</span></p>
+                </div>
+            `;
+            chatMessages.appendChild(thinkingMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            const dotsElement = thinkingMessage.querySelector('#thinkingDots');
+            let dotCount = 0;
+            const dotInterval = setInterval(() => {
+                dotCount = (dotCount + 1) % 4;
+                dotsElement.textContent = '.'.repeat(dotCount);
+            }, 500);
+            
+            try {
+                const reply = await callDeepSeekAPI(message);
+                clearInterval(dotInterval);
+                chatMessages.removeChild(thinkingMessage);
+                
+                const replyMessage = document.createElement('div');
+                replyMessage.className = 'flex justify-start';
+                replyMessage.innerHTML = `
+                    <div class="bg-white rounded-custom p-2 shadow-sm max-w-[80%] slide-up">
+                        <p class="text-sm text-gray-800">${reply}</p>
+                    </div>
+                `;
+                chatMessages.appendChild(replyMessage);
+            } catch (error) {
+                console.error("发送消息失败:", error);
+                clearInterval(dotInterval);
+                chatMessages.removeChild(thinkingMessage);
+                
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'flex justify-start';
+                errorMessage.innerHTML = `
+                    <div class="bg-red-100 text-red-800 rounded-custom p-2 shadow-sm max-w-[80%] slide-up">
+                        <p class="text-sm">抱歉，服务暂时不可用，请稍后再试。</p>
+                    </div>
+                `;
+                chatMessages.appendChild(errorMessage);
+            }
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+        
+        document.getElementById('joinBtn').addEventListener('click', function() {
+            window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=dEKudygGvvibsqCudG9oJnDyW0oNBTr%2BlhTxhZTFS25dCwOcQPPK41I6sdqxRtZa&busi_data=eyJncm91cENvZGUiOiIxMDI4ODQ3MTQzIiwidG9rZW4iOiI0Sy9hdkd6dDM0TERSSUtxS3VxSmI1WnRIY2pJTEQ4WFJ2ZGg2WUU3a1A2TGhiZ3B6Qk9YRmpYZEtHWjBzWHVzIiwidWluIjoiMjI5NTQzNDA0MiJ9&data=OmpyxumP08TF4VDq1wzuMT7FR8xtrZnWzuFFAi_57Y695gDT17US8lu5__Lv2NpJZRA7a_id7TuxV_ZjMoA3CA&svctype=4&tempid=h5_group_info';
+        });
+    </script>
+</body>
+</html>
