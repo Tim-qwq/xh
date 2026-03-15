@@ -445,26 +445,39 @@
                 ];
                 this.init();
             }
-            init() { this.bindEvents(); }
-            validateLogin(username, password) { return this.accounts.find(acc => acc.username === username && acc.password === password); }
+            
+            init() { 
+                this.bindEvents(); 
+            }
+            
+            validateLogin(username, password) { 
+                return this.accounts.find(acc => acc.username === username && acc.password === password); 
+            }
+            
             bindEvents() {
                 document.getElementById('loginForm').addEventListener('submit', (e) => {
                     e.preventDefault();
                     const username = e.target.username.value;
                     const password = e.target.password.value;
                     const account = this.validateLogin(username, password);
+                    
                     if (account) {
                         this.showNotification('登录成功！正在跳转...', 'success');
-                        setTimeout(() => { window.location.href = account.url; }, 1500);
+                        setTimeout(() => { 
+                            window.location.href = account.url; 
+                        }, 1500);
                     } else {
                         this.showNotification('账号或密码错误！', 'error');
                     }
                 });
             }
+            
             showNotification(message, type = 'info') {
                 const notification = document.createElement('div');
                 notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-custom shadow-lg transform transition-all duration-300 scale-in ${
-                    type === 'success' ? 'bg-green-500 text-white' : type === 'error' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
+                    type === 'success' ? 'bg-green-500 text-white' : 
+                    type === 'error' ? 'bg-red-500 text-white' : 
+                    'bg-blue-500 text-white'
                 }`;
                 notification.innerHTML = `
                     <div class="flex items-center space-x-2">
@@ -473,9 +486,12 @@
                     </div>
                 `;
                 document.body.appendChild(notification);
+                
                 setTimeout(() => {
                     notification.classList.add('opacity-0', 'translate-y-[-20px]');
-                    setTimeout(() => { notification.remove(); }, 300);
+                    setTimeout(() => { 
+                        notification.remove(); 
+                    }, 300);
                 }, 3000);
             }
         }
@@ -486,12 +502,14 @@
             { title: "最后一页", artist: "江语晨", cover: "https://tse3-mm.cn.bing.net/th/id/OIP-C.ifTwJhHsXCezUbUmz2zXSgHaHa?w=202&h=202&c=7&r=0&o=7&cb=iwp2&dpr=1.5&pid=1.7&rm=3", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
             { title: "枫", artist: "周杰伦", cover: "https://tse4-mm.cn.bing.net/th/id/OIP-C.JM_N9m8Y6P6IW4tihpDvjwHaHa?w=155&h=180&c=7&r=0&o=7&cb=iwp2&dpr=1.5&pid=1.7&rm=3", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
         ];
+        
         let currentSongIndex = 0;
         const musicPlayer = document.getElementById('musicPlayer');
         const playButton = document.getElementById('playMusic');
         const musicTitle = document.querySelector('#musicModal h2');
         const musicArtist = document.querySelector('#musicModal p');
         const musicCover = document.querySelector('#musicModal img');
+        
         function updateMusicInfo() {
             const song = songs[currentSongIndex];
             musicTitle.textContent = song.title;
@@ -499,6 +517,10 @@
             musicCover.src = song.cover;
             musicPlayer.src = song.src;
         }
+
+        // DeepSeek API 配置
+        const DEEPSEEK_API_KEY = 'sk-ee9657049afd4f9184d0dc7662818673';
+        const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 
         // 初始化应用
         document.addEventListener('DOMContentLoaded', function() {
@@ -509,7 +531,9 @@
                 const chatWindow = document.getElementById('chatWindow');
                 chatWindow.classList.remove('scale-0', 'opacity-0');
                 chatWindow.classList.add('scale-100', 'opacity-100');
-                setTimeout(() => { document.getElementById('userInput').focus(); }, 300);
+                setTimeout(() => { 
+                    document.getElementById('userInput').focus(); 
+                }, 300);
             });
             
             // 歌曲播放
@@ -519,230 +543,239 @@
                 updateMusicInfo();
                 musicPlayer.load();
             });
+            
             document.getElementById('closeMusic').addEventListener('click', function() {
                 const musicModal = document.getElementById('musicModal');
                 musicModal.classList.add('hidden');
                 musicPlayer.pause();
             });
+            
             document.getElementById('musicModal').addEventListener('click', function(event) {
-                if (event.target === this) { this.classList.add('hidden'); musicPlayer.pause(); }
+                if (event.target === this) { 
+                    this.classList.add('hidden'); 
+                    musicPlayer.pause(); 
+                }
             });
+            
             playButton.addEventListener('click', function() {
-                if (musicPlayer.paused) { musicPlayer.play(); playButton.innerHTML = '<i class="fa fa-pause"></i>'; }
-                else { musicPlayer.pause(); playButton.innerHTML = '<i class="fa fa-play"></i>'; }
+                if (musicPlayer.paused) { 
+                    musicPlayer.play(); 
+                    playButton.innerHTML = '<i class="fa fa-pause"></i>'; 
+                } else { 
+                    musicPlayer.pause(); 
+                    playButton.innerHTML = '<i class="fa fa-play"></i>'; 
+                }
             });
+            
             document.getElementById('prevMusic').addEventListener('click', function() {
                 currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-                updateMusicInfo(); musicPlayer.play(); playButton.innerHTML = '<i class="fa fa-pause"></i>';
+                updateMusicInfo(); 
+                musicPlayer.play(); 
+                playButton.innerHTML = '<i class="fa fa-pause"></i>';
             });
+            
             document.getElementById('nextMusic').addEventListener('click', function() {
                 currentSongIndex = (currentSongIndex + 1) % songs.length;
-                updateMusicInfo(); musicPlayer.play(); playButton.innerHTML = '<i class="fa fa-pause"></i>';
+                updateMusicInfo(); 
+                musicPlayer.play(); 
+                playButton.innerHTML = '<i class="fa fa-pause"></i>';
             });
+            
             musicPlayer.addEventListener('ended', function() {
                 currentSongIndex = (currentSongIndex + 1) % songs.length;
-                updateMusicInfo(); musicPlayer.play();
+                updateMusicInfo(); 
+                musicPlayer.play();
             });
             
             // 其他功能按钮
-            document.getElementById('gameBtn').addEventListener('click', function() { window.location.href = 'https://tim-qwq.github.io/xh/index02.html'; });
-            document.getElementById('photoBtn').addEventListener('click', function() { window.location.href = 'https://tim-qwq.github.io/xh/index01.html'; });
+            document.getElementById('gameBtn').addEventListener('click', function() { 
+                window.location.href = 'https://tim-qwq.github.io/xh/index02.html'; 
+            });
+            
+            document.getElementById('photoBtn').addEventListener('click', function() { 
+                window.location.href = 'https://tim-qwq.github.io/xh/index01.html'; 
+            });
+            
             document.getElementById('chatBtn').addEventListener('click', function() {
                 const chatWindow = document.getElementById('chatWindow');
                 chatWindow.classList.remove('scale-0', 'opacity-0');
                 chatWindow.classList.add('scale-100', 'opacity-100');
             });
+            
             document.getElementById('closeChat').addEventListener('click', function() {
                 const chatWindow = document.getElementById('chatWindow');
                 chatWindow.classList.remove('scale-100', 'opacity-100');
                 chatWindow.classList.add('scale-0', 'opacity-0');
             });
+            
+            // 发送消息到真实的 DeepSeek API
             async function sendMessage() {
                 const userInput = document.getElementById('userInput');
                 const message = userInput.value.trim();
+                
                 if (message === '') return;
+                
                 const chatMessages = document.getElementById('chatMessages');
+                
+                // 添加用户消息
                 const userMessage = document.createElement('div');
                 userMessage.className = 'flex justify-end';
                 userMessage.innerHTML = `<div class="bg-primary text-white rounded-custom p-2 shadow-sm max-w-[80%] fade-in"><p class="text-sm">${message}</p></div>`;
                 chatMessages.appendChild(userMessage);
                 userInput.value = '';
+                
+                // 添加思考中消息
                 const thinkingMessage = document.createElement('div');
                 thinkingMessage.className = 'flex justify-start';
                 thinkingMessage.innerHTML = `<div class="bg-white rounded-custom p-2 shadow-sm max-w-[80%] slide-up"><p class="text-sm text-gray-500">正在思考<span id="thinkingDots">...</span></p></div>`;
                 chatMessages.appendChild(thinkingMessage);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // 思考动画
                 const dotsElement = thinkingMessage.querySelector('#thinkingDots');
                 let dotCount = 0;
-                const dotInterval = setInterval(() => { dotCount = (dotCount + 1) % 4; dotsElement.textContent = '.'.repeat(dotCount); }, 500);
-                setTimeout(() => {
+                const dotInterval = setInterval(() => { 
+                    dotCount = (dotCount + 1) % 4; 
+                    dotsElement.textContent = '.'.repeat(dotCount); 
+                }, 500);
+                
+                try {
+                    // 调用 DeepSeek API
+                    const response = await fetch(DEEPSEEK_API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+                        },
+                        body: JSON.stringify({
+                            model: "deepseek-chat",
+                            messages: [
+                                {
+                                    role: "user",
+                                    content: message
+                                }
+                            ],
+                            temperature: 0.7,
+                            max_tokens: 2048
+                        })
+                    });
+                    
                     clearInterval(dotInterval);
                     chatMessages.removeChild(thinkingMessage);
+                    
+                    if (!response.ok) {
+                        throw new Error(`API 请求失败: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    const aiReply = data.choices[0].message.content;
+                    
+                    // 添加AI回复
                     const replyMessage = document.createElement('div');
                     replyMessage.className = 'flex justify-start';
-                    replyMessage.innerHTML = `<div class="bg-white rounded-custom p-2 shadow-sm max-w-[80%] slide-up"><p class="text-sm text-gray-800">您好！我是AI助手，很高兴为您服务。请问有什么可以帮助您的吗？</p></div>`;
+                    replyMessage.innerHTML = `<div class="bg-white rounded-custom p-2 shadow-sm max-w-[80%] slide-up"><p class="text-sm text-gray-800">${aiReply}</p></div>`;
                     chatMessages.appendChild(replyMessage);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 2000);
+                    
+                } catch (error) {
+                    clearInterval(dotInterval);
+                    chatMessages.removeChild(thinkingMessage);
+                    
+                    // 显示错误信息
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'flex justify-start';
+                    errorMessage.innerHTML = `<div class="bg-red-50 rounded-custom p-2 shadow-sm max-w-[80%] slide-up"><p class="text-sm text-red-600">抱歉，API调用失败：${error.message}</p></div>`;
+                    chatMessages.appendChild(errorMessage);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    
+                    console.error('API 调用错误:', error);
+                }
             }
+            
             document.getElementById('sendBtn').addEventListener('click', sendMessage);
-            document.getElementById('userInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') sendMessage(); });
-            document.getElementById('joinBtn').addEventListener('click', function() { window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=dEKudygGvvibsqCudG9oJnDyW0oNBTr%2BlhTxhZTFS25dCwOcQPPK41I6sdqxRtZa&busi_data=eyJncm91cENvZGUiOiIxMDI4ODQ3MTQzIiwidG9rZW4iOiI0Sy9hdkd6dDM0TERSSUtxS3VxSmI1WnRIY2pJTEQ4WFJ2ZGg2WUU3a1A2TGhiZ3B6Qk9YRmpYZEtHWjBzWHVzIiwidWluIjoiMjI5NTQzNDA0MiJ9&data=OmpyxumP08TF4VDq1wzuMT7FR8xtrZnWzuFFAi_57Y695gDT17US8lu5__Lv2NpJZRA7a_id7TuxV_ZjMoA3CA&svctype=4&tempid=h5_group_info'; });
+            
+            document.getElementById('userInput').addEventListener('keypress', function(e) { 
+                if (e.key === 'Enter') sendMessage(); 
+            });
+            
+            document.getElementById('joinBtn').addEventListener('click', function() { 
+                window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=dEKudygGvvibsqCudG9oJnDyW0oNBTr%2BlhTxhZTFS25dCwOcQPPK41I6sdqxRtZa&busi_data=eyJncm91cENvZGUiOiIxMDI4ODQ3MTQzIiwidG9rZW4iOiI0Sy9hdkd6dDM0TERSSUtxS3VxSmI1WnRIY2pJTEQ4WFJ2ZGg2WUU3a1A2TGhiZ3B6Qk9YRmpYZEtHWjBzWHVzIiwidWluIjoiMjI5NTQzNDA0MiJ9&data=OmpyxumP08TF4VDq1wzuMT7FR8xtrZnWzuFFAi_57Y695gDT17US8lu5__Lv2NpJZRA7a_id7TuxV_ZjMoA3CA&svctype=4&tempid=h5_group_info'; 
+            });
             
             // 移动端菜单
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
             const mobileMenu = document.getElementById('mobileMenu');
             const mobileMenuContent = document.getElementById('mobileMenuContent');
             const closeMobileMenu = document.getElementById('closeMobileMenu');
+            
             mobileMenuBtn.addEventListener('click', function() {
                 mobileMenu.classList.remove('hidden');
-                setTimeout(() => { mobileMenuContent.classList.remove('-translate-x-full'); }, 10);
+                setTimeout(() => { 
+                    mobileMenuContent.classList.remove('-translate-x-full'); 
+                }, 10);
             });
+            
             function closeMenu() {
                 mobileMenuContent.classList.add('-translate-x-full');
-                setTimeout(() => { mobileMenu.classList.add('hidden'); }, 300);
+                setTimeout(() => { 
+                    mobileMenu.classList.add('hidden'); 
+                }, 300);
             }
+            
             closeMobileMenu.addEventListener('click', closeMenu);
-            mobileMenu.addEventListener('click', function(e) { if (e.target === mobileMenu) closeMenu(); });
-            document.getElementById('mobileMusicBtn').addEventListener('click', function() { document.getElementById('musicBtn').click(); closeMenu(); });
-            document.getElementById('mobileGameBtn').addEventListener('click', function() { document.getElementById('gameBtn').click(); closeMenu(); });
-            document.getElementById('mobilePhotoBtn').addEventListener('click', function() { document.getElementById('photoBtn').click(); closeMenu(); });
-            document.getElementById('mobileChatBtn').addEventListener('click', function() { document.getElementById('chatBtn').click(); closeMenu(); });
-            document.getElementById('mobileLoginBtn').addEventListener('click', function() { document.getElementById('loginBtn').click(); closeMenu(); });
-            document.getElementById('mobileJoinBtn').addEventListener('click', function() { document.getElementById('joinBtn').click(); closeMenu(); });
+            
+            mobileMenu.addEventListener('click', function(e) { 
+                if (e.target === mobileMenu) closeMenu(); 
+            });
+            
+            // 移动端按钮事件绑定
+            document.getElementById('mobileMusicBtn').addEventListener('click', function() { 
+                document.getElementById('musicBtn').click(); 
+                closeMenu(); 
+            });
+            
+            document.getElementById('mobileGameBtn').addEventListener('click', function() { 
+                document.getElementById('gameBtn').click(); 
+                closeMenu(); 
+            });
+            
+            document.getElementById('mobilePhotoBtn').addEventListener('click', function() { 
+                document.getElementById('photoBtn').click(); 
+                closeMenu(); 
+            });
+            
+            document.getElementById('mobileChatBtn').addEventListener('click', function() { 
+                document.getElementById('chatBtn').click(); 
+                closeMenu(); 
+            });
+            
+            document.getElementById('mobileLoginBtn').addEventListener('click', function() { 
+                document.getElementById('loginBtn').click(); 
+                closeMenu(); 
+            });
+            
+            document.getElementById('mobileJoinBtn').addEventListener('click', function() { 
+                document.getElementById('joinBtn').click(); 
+                closeMenu(); 
+            });
             
             // 登录弹窗
             document.getElementById('loginBtn').addEventListener('click', function() {
                 const loginModal = document.getElementById('loginModal');
                 loginModal.classList.remove('hidden');
             });
-            document.getElementById('closeLogin').addEventListener('click', function() {
-                const loginModal = document.getElementById('loginModal');
-                loginModal.classList.add('hidden');
-            });
-            document.getElementById('loginModal').addEventListener('click', function(event) {
-                if (event.target === this) this.classList.add('hidden');
-            });
-        });
-    </script>
-</body>
-</html>                    chatMessages.removeChild(thinkingMessage);
-                    
-                    const replyMessage = document.createElement('div');
-                    replyMessage.className = 'flex justify-start';
-                    replyMessage.innerHTML = `
-                        <div class="bg-white rounded-custom p-2 shadow-sm max-w-[80%] slide-up">
-                            <p class="text-sm text-gray-800">您好！我是AI助手，很高兴为您服务。请问有什么可以帮助您的吗？</p>
-                        </div>
-                    `;
-                    chatMessages.appendChild(replyMessage);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 2000);
-            }
             
-            // 发送消息按钮点击事件
-            document.getElementById('sendBtn').addEventListener('click', sendMessage);
-            
-            // 回车键发送消息
-            document.getElementById('userInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-            
-            // 入群按钮点击事件
-            document.getElementById('joinBtn').addEventListener('click', function() {
-                window.location.href = 'https://qun.qq.com/universal-share/share?ac=1&authKey=dEKudygGvvibsqCudG9oJnDyW0oNBTr%2BlhTxhZTFS25dCwOcQPPK41I6sdqxRtZa&busi_data=eyJncm91cENvZGUiOiIxMDI4ODQ3MTQzIiwidG9rZW4iOiI0Sy9hdkd6dDM0TERSSUtxS3VxSmI1WnRIY2pJTEQ4WFJ2ZGg2WUU3a1A2TGhiZ3B6Qk9YRmpYZEtHWjBzWHVzIiwidWluIjoiMjI5NTQzNDA0MiJ9&data=OmpyxumP08TF4VDq1wzuMT7FR8xtrZnWzuFFAi_57Y695gDT17US8lu5__Lv2NpJZRA7a_id7TuxV_ZjMoA3CA&svctype=4&tempid=h5_group_info';
-            });
-            
-            // 移动端菜单交互
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            const mobileMenu = document.getElementById('mobileMenu');
-            const mobileMenuContent = document.getElementById('mobileMenuContent');
-            const closeMobileMenu = document.getElementById('closeMobileMenu');
-            
-            // 打开移动端菜单
-            mobileMenuBtn.addEventListener('click', function() {
-                mobileMenu.classList.remove('hidden');
-                setTimeout(() => {
-                    mobileMenuContent.classList.remove('-translate-x-full');
-                }, 10);
-            });
-            
-            // 关闭移动端菜单
-            function closeMenu() {
-                mobileMenuContent.classList.add('-translate-x-full');
-                setTimeout(() => {
-                    mobileMenu.classList.add('hidden');
-                }, 300);
-            }
-            
-            closeMobileMenu.addEventListener('click', closeMenu);
-            
-            // 点击遮罩层关闭菜单
-            mobileMenu.addEventListener('click', function(e) {
-                if (e.target === mobileMenu) {
-                    closeMenu();
-                }
-            });
-            
-            // 移动端按钮事件绑定
-            document.getElementById('mobileMusicBtn').addEventListener('click', function() {
-                document.getElementById('musicBtn').click();
-                closeMenu();
-            });
-            
-            document.getElementById('mobileGameBtn').addEventListener('click', function() {
-                document.getElementById('gameBtn').click();
-                closeMenu();
-            });
-            
-            document.getElementById('mobilePhotoBtn').addEventListener('click', function() {
-                document.getElementById('photoBtn').click();
-                closeMenu();
-            });
-            
-            document.getElementById('mobileChatBtn').addEventListener('click', function() {
-                document.getElementById('chatBtn').click();
-                closeMenu();
-            });
-            
-            document.getElementById('mobileLoginBtn').addEventListener('click', function() {
-                document.getElementById('loginBtn').click();
-                closeMenu();
-            });
-            
-            document.getElementById('mobileJoinBtn').addEventListener('click', function() {
-                document.getElementById('joinBtn').click();
-                closeMenu();
-            });
-            
-            // 登录按钮点击事件
-            document.getElementById('loginBtn').addEventListener('click', function() {
-                const loginModal = document.getElementById('loginModal');
-                loginModal.classList.remove('hidden');
-            });
-            
-            // 关闭登录弹窗
             document.getElementById('closeLogin').addEventListener('click', function() {
                 const loginModal = document.getElementById('loginModal');
                 loginModal.classList.add('hidden');
             });
             
-            // 点击登录弹窗背景关闭
             document.getElementById('loginModal').addEventListener('click', function(event) {
                 if (event.target === this) {
                     this.classList.add('hidden');
                 }
             });
-            
-
         });
     </script>
-
 </body>
 </html>
-
-
-
-
