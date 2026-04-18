@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>向华社区</title>
+    <title>探索 AI 的无限可能</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
     
@@ -76,6 +76,31 @@
                 border-radius: 1.1rem;
                 padding: 0 1rem;
                 height: 100%;
+            }
+
+            /* 拖动相关样式 */
+            .draggable {
+                cursor: move;
+                user-select: none; /* 防止拖动时选中文字 */
+            }
+            .dragging {
+                opacity: 0.9;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+                pointer-events: none; /* 拖动时避免重复触发事件 */
+            }
+            .snap-animation {
+                transition: all 0.3s ease-out;
+            }
+            /* 修改：移除默认的bottom/right定位，改为初始居中，避免吸附冲突 */
+            .chat-window-base {
+                position: fixed;
+                z-index: 50;
+                width: 90%;
+                max-width: 384px; /* md:w-96 */
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                transform-origin: center center;
             }
         }
     </style>
@@ -357,9 +382,10 @@
         </div>
     </div>
 
-    <!-- DeepSeek 大模型聊天窗口 -->
-    <div id="chatWindow" class="fixed bottom-16 left-4 right-4 sm:bottom-20 sm:right-6 sm:left-auto sm:w-80 md:w-96 bg-white rounded-custom shadow-lg overflow-hidden transform transition-all duration-500 scale-0 opacity-0">
-        <div class="bg-secondary text-white p-3 flex justify-between items-center rounded-t-custom">
+    <!-- DeepSeek 大模型聊天窗口 - 修复定位和拖动类 -->
+    <div id="chatWindow" class="chat-window-base bg-white rounded-custom shadow-lg overflow-hidden transform transition-all duration-500 scale-0 opacity-0 snap-animation" style="touch-action: none;">
+        <!-- 拖动头部 - 优化拖动样式 -->
+        <div class="bg-secondary text-white p-3 flex justify-between items-center rounded-t-custom draggable">
             <h3 class="font-bold">DeepSeek 大模型</h3>
             <button id="closeChat" class="text-white hover:text-gray-200">
                 <i class="fa fa-times"></i>
@@ -522,15 +548,172 @@
         const DEEPSEEK_API_KEY = 'sk-ee9657049afd4f9184d0dc7662818673';
         const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 
+        // 对话框拖动+自动吸附功能 - 修复吸附到角落的问题
+        function initDraggableChatWindow() {
+            const chatWindow = document.getElementById('chatWindow');
+            const dragHandle = chatWindow.querySelector('.draggable');
+            
+            let isDragging = false;
+            let startX, startY;
+            let initialLeft, initialTop;
+            let windowWidth, windowHeight, chatWidth, chatHeight;
+            
+            // 初始化尺寸
+            function updateDimensions() {
+                windowWidth = window.innerWidth;
+                windowHeight = window.innerHeight;
+                chatWidth = chatWindow.offsetWidth;
+                chatHeight = chatWindow.offsetHeight;
+            }
+            
+            // 开始拖动
+            dragHandle.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                chatWindow.classList.add('dragging');
+                
+                // 获取当前位置
+                const rect = chatWindow.getBoundingClientRect();
+                startX = e.clientX;
+                startY = e.clientY;
+                initialLeft = rect.left;
+                initialTop = rect.top;
+                
+                updateDimensions();
+                
+                // 清除transform，改用left/top定位
+                chatWindow.style.transform = 'none';
+                
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            
+            // 鼠标移动
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+                
+                let x = initialLeft + deltaX;
+                let y = initialTop + deltaY;
+                
+                // 限制在视口内
+                x = Math.max(0, Math.min(x, windowWidth - chatWidth));
+                y = Math.max(0, Math.min(y, windowHeight - chatHeight));
+                
+                // 实时更新位置
+                chatWindow.style.transition = 'none';
+                chatWindow.style.left = `${x}px`;
+                chatWindow.style.top = `${y}px`;
+                chatWindow.style.right = 'auto';
+                chatWindow.style.bottom = 'auto';
+            });
+            
+            // 结束拖动 - 修复吸附逻辑，确保能精准吸附到四个角落
+            document.addEventListener('mouseup', () => {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                chatWindow.classList.remove('dragging');
+                chatWindow.style.transition = 'all 0.3s ease-out';
+                
+                // 获取当前位置
+                const rect = chatWindow.getBoundingClientRect();
+                const centerX = rect.left + chatWidth / 2;
+                const centerY = rect.top + chatHeight / 2;
+                
+                // 计算到四个角落的距离（而不是边缘）
+                const cornerDistances = {
+                    // 左上角
+                    topLeft: Math.sqrt(Math.pow(centerX, 2) + Math.pow(centerY, 2)),
+                    // 右上角
+                    topRight: Math.sqrt(Math.pow(windowWidth - centerX, 2) + Math.pow(centerY, 2)),
+                    // 左下角
+                    bottomLeft: Math.sqrt(Math.pow(centerX, 2) + Math.pow(windowHeight - centerY, 2)),
+                    // 右下角
+                    bottomRight: Math.sqrt(Math.pow(windowWidth - centerX, 2) + Math.pow(windowHeight - centerY, 2))
+                };
+                
+                // 找到最近的角落
+                const closestCorner = Object.entries(cornerDistances).sort((a, b) => a[1] - b[1])[0][0];
+                
+                // 吸附到最近的角落
+                switch(closestCorner) {
+                    case 'topLeft':
+                        chatWindow.style.left = '16px';
+                        chatWindow.style.top = '16px';
+                        break;
+                    case 'topRight':
+                        chatWindow.style.left = `${windowWidth - chatWidth - 16}px`;
+                        chatWindow.style.top = '16px';
+                        break;
+                    case 'bottomLeft':
+                        chatWindow.style.left = '16px';
+                        chatWindow.style.top = `${windowHeight - chatHeight - 16}px`;
+                        break;
+                    case 'bottomRight':
+                        chatWindow.style.left = `${windowWidth - chatWidth - 16}px`;
+                        chatWindow.style.top = `${windowHeight - chatHeight - 16}px`;
+                        break;
+                }
+            });
+            
+            // 触摸设备支持
+            dragHandle.addEventListener('touchstart', (e) => {
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousedown', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY,
+                    bubbles: true,
+                    cancelable: true
+                });
+                dragHandle.dispatchEvent(mouseEvent);
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousemove', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY,
+                    bubbles: true,
+                    cancelable: true
+                });
+                document.dispatchEvent(mouseEvent);
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchend', (e) => {
+                const mouseEvent = new MouseEvent('mouseup', {
+                    bubbles: true,
+                    cancelable: true
+                });
+                document.dispatchEvent(mouseEvent);
+                e.preventDefault();
+            });
+            
+            window.addEventListener('resize', updateDimensions);
+        }
+
         // 初始化应用
         document.addEventListener('DOMContentLoaded', function() {
             const loginManager = new LoginManager();
+            
+            // 初始化对话框拖动+吸附功能
+            initDraggableChatWindow();
             
             // 搜索栏打开AI聊天
             document.getElementById('searchBar').addEventListener('click', function() {
                 const chatWindow = document.getElementById('chatWindow');
                 chatWindow.classList.remove('scale-0', 'opacity-0');
                 chatWindow.classList.add('scale-100', 'opacity-100');
+                // 重置位置
+                chatWindow.style.transform = 'translate(-50%, -50%)';
+                chatWindow.style.left = '';
+                chatWindow.style.top = '';
+                chatWindow.style.right = '';
+                chatWindow.style.bottom = '';
                 setTimeout(() => { 
                     document.getElementById('userInput').focus(); 
                 }, 300);
@@ -600,6 +783,12 @@
                 const chatWindow = document.getElementById('chatWindow');
                 chatWindow.classList.remove('scale-0', 'opacity-0');
                 chatWindow.classList.add('scale-100', 'opacity-100');
+                // 重置位置
+                chatWindow.style.transform = 'translate(-50%, -50%)';
+                chatWindow.style.left = '';
+                chatWindow.style.top = '';
+                chatWindow.style.right = '';
+                chatWindow.style.bottom = '';
             });
             
             document.getElementById('closeChat').addEventListener('click', function() {
@@ -640,7 +829,7 @@
                 }, 500);
                 
                 try {
-                    // 调用 DeepSeek API
+                   
                     const response = await fetch(DEEPSEEK_API_URL, {
                         method: 'POST',
                         headers: {
@@ -670,7 +859,7 @@
                     const data = await response.json();
                     const aiReply = data.choices[0].message.content;
                     
-                    // 添加AI回复
+                    
                     const replyMessage = document.createElement('div');
                     replyMessage.className = 'flex justify-start';
                     replyMessage.innerHTML = `<div class="bg-white rounded-custom p-2 shadow-sm max-w-[80%] slide-up"><p class="text-sm text-gray-800">${aiReply}</p></div>`;
@@ -681,7 +870,7 @@
                     clearInterval(dotInterval);
                     chatMessages.removeChild(thinkingMessage);
                     
-                    // 显示错误信息
+                    
                     const errorMessage = document.createElement('div');
                     errorMessage.className = 'flex justify-start';
                     errorMessage.innerHTML = `<div class="bg-red-50 rounded-custom p-2 shadow-sm max-w-[80%] slide-up"><p class="text-sm text-red-600">抱歉，API调用失败：${error.message}</p></div>`;
