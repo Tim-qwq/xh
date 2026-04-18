@@ -28,6 +28,12 @@
                     },
                     borderRadius: {
                         'custom': '1.25rem',
+                    },
+                    // 新增折叠屏/平板断点
+                    screens: {
+                        'fold': '280px',    // 折叠屏内屏
+                        'tablet': '768px',  // 平板
+                        'laptop': '1024px', // 折叠屏外屏/小笔记本
                     }
                 },
             }
@@ -81,34 +87,48 @@
             /* 拖动相关样式 */
             .draggable {
                 cursor: move;
-                user-select: none; /* 防止拖动时选中文字 */
+                user-select: none;
             }
             .dragging {
                 opacity: 0.9;
                 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-                pointer-events: none; /* 拖动时避免重复触发事件 */
+                pointer-events: none;
             }
             .snap-animation {
                 transition: all 0.3s ease-out;
             }
-            /* 修改：移除默认的bottom/right定位，改为初始居中，避免吸附冲突 */
+            /* 适配所有设备的聊天窗口基础样式 */
             .chat-window-base {
                 position: fixed;
                 z-index: 50;
-                width: 90%;
-                max-width: 384px; /* md:w-96 */
+                width: calc(100% - 32px);
+                max-width: 384px;
+                height: auto;
+                max-height: 80vh;
                 left: 50%;
                 top: 50%;
                 transform: translate(-50%, -50%);
                 transform-origin: center center;
+                touch-action: manipulation;
+            }
+            /* 折叠屏/手机全屏聊天窗口 */
+            .chat-fullscreen {
+                width: 100% !important;
+                height: 100% !important;
+                max-width: 100% !important;
+                max-height: 100% !important;
+                border-radius: 0 !important;
+            }
+            .chat-fullscreen #chatMessages {
+                height: calc(100vh - 140px) !important;
             }
         }
     </style>
 </head>
-<body class="font-inter bg-neutral min-h-screen flex flex-col">
+<body class="font-inter bg-neutral min-h-screen flex flex-col overflow-x-hidden">
     <!-- 移动端导航菜单 -->
     <div id="mobileMenu" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
-        <div class="bg-white w-64 h-full transform transition-transform duration-300 -translate-x-full" id="mobileMenuContent">
+        <div class="bg-white w-64 max-w-[80%] h-full transform transition-transform duration-300 -translate-x-full" id="mobileMenuContent">
             <div class="p-4 border-b">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-2">
@@ -159,38 +179,38 @@
                     <span class="font-bold text-dark text-lg">新向华</span>
                 </div>
                 
-                <!-- 桌面端导航按钮 -->
-                <div class="hidden md:flex items-center space-x-4">
-                    <button id="musicBtn" class="px-3 py-2 rounded-custom hover:bg-gray-100 flex items-center space-x-1">
+                <!-- 桌面/平板端导航按钮 - 自动适配折叠屏 -->
+                <div class="hidden laptop:flex items-center space-x-2 md:space-x-4 overflow-x-auto py-2 scrollbar-hide">
+                    <button id="musicBtn" class="px-2 py-1 md:px-3 md:py-2 rounded-custom hover:bg-gray-100 flex items-center space-x-1 text-sm md:text-base whitespace-nowrap">
                         <i class="fa fa-music text-primary"></i>
                         <span>歌曲播放</span>
                     </button>
-                    <button id="gameBtn" class="px-3 py-2 rounded-custom hover:bg-gray-100 flex items-center space-x-1">
+                    <button id="gameBtn" class="px-2 py-1 md:px-3 md:py-2 rounded-custom hover:bg-gray-100 flex items-center space-x-1 text-sm md:text-base whitespace-nowrap">
                         <i class="fa fa-gamepad text-primary"></i>
                         <span>飞机小游戏</span>
                     </button>
-                    <button id="photoBtn" class="px-3 py-2 rounded-custom hover:bg-gray-100 flex items-center space-x-1">
+                    <button id="photoBtn" class="px-2 py-1 md:px-3 md:py-2 rounded-custom hover:bg-gray-100 flex items-center space-x-1 text-sm md:text-base whitespace-nowrap">
                         <i class="fa fa-user-circle text-primary"></i>
                         <span>个人照片</span>
                     </button>
-                    <button id="chatBtn" class="px-3 py-2 rounded-custom hover:bg-gray-100 flex items-center space-x-1">
+                    <button id="chatBtn" class="px-2 py-1 md:px-3 md:py-2 rounded-custom hover:bg-gray-100 flex items-center space-x-1 text-sm md:text-base whitespace-nowrap">
                         <i class="fa fa-comment text-secondary"></i>
                         <span>DeepSeek</span>
                     </button>
-                    <button id="loginBtn" class="px-3 py-2 rounded-custom hover:bg-gray-100 flex items-center space-x-1">
+                    <button id="loginBtn" class="px-2 py-1 md:px-3 md:py-2 rounded-custom hover:bg-gray-100 flex items-center space-x-1 text-sm md:text-base whitespace-nowrap">
                         <i class="fa fa-sign-in text-primary"></i>
                         <span>登录</span>
                     </button>
-                    <button id="joinBtn" class="px-3 py-2 rounded-custom hover:bg-gray-100 flex items-center space-x-1">
+                    <button id="joinBtn" class="px-2 py-1 md:px-3 md:py-2 rounded-custom hover:bg-gray-100 flex items-center space-x-1 text-sm md:text-base whitespace-nowrap">
                         <i class="fa fa-users text-accent"></i>
                         <span>入群</span>
                     </button>
                 </div>
                 
-                <!-- 移动端菜单按钮 -->
-                <div class="md:hidden">
+                <!-- 移动端/折叠屏菜单按钮 -->
+                <div class="laptop:hidden">
                     <button id="mobileMenuBtn" class="p-2 rounded-custom hover:bg-gray-100">
-                        <i class="fa fa-bars text-dark"></i>
+                        <i class="fa fa-bars text-dark text-xl"></i>
                     </button>
                 </div>
             </div>
@@ -198,15 +218,15 @@
     </header>
 
     <!-- Hero区域（包含标题和搜索栏） -->
-    <section class="bg-white py-8 md:py-12">
+    <section class="bg-white py-6 md:py-8 lg:py-12">
         <div class="container mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-dark mb-3">探索 AI 的无限可能</h1>
-            <p class="text-lg md:text-xl text-gray-500 mb-8">简洁、智能、属于未来的 AI 创作者社区</p>
+            <h1 class="text-3xl fold:text-4xl md:text-5xl lg:text-6xl font-bold text-dark mb-3 leading-tight">探索 AI 的无限可能</h1>
+            <p class="text-base fold:text-lg md:text-xl text-gray-500 mb-6 md:mb-8">简洁、智能、属于未来的 AI 创作者社区</p>
             
             <!-- 搜索栏 -->
             <div class="search-rainbow-border h-12 w-full max-w-3xl mx-auto mb-6">
                 <div class="search-input-wrapper flex items-center justify-between cursor-pointer" id="searchBar">
-                    <span class="text-gray-500">点击以试用deepSeek大模型</span>
+                    <span class="text-gray-500 text-sm fold:text-base">点击以试用deepSeek大模型</span>
                     <div class="flex items-center space-x-2">
                         <i class="fa fa-search text-primary"></i>
                         <span class="hidden sm:inline text-primary font-medium">探索</span>
@@ -216,14 +236,14 @@
             </div>
             
             <!-- 下方标签 -->
-            <div class="flex flex-wrap justify-center gap-3">
-                <button class="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+            <div class="flex flex-wrap justify-center gap-2 fold:gap-3">
+                <button class="px-3 py-1.5 fold:px-4 fold:py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                     Midjourney v6
                 </button>
-                <button class="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                <button class="px-3 py-1.5 fold:px-4 fold:py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                     GPT-4o 技巧
                 </button>
-                <button class="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                <button class="px-3 py-1.5 fold:px-4 fold:py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                     提示词工程
                 </button>
             </div>
@@ -231,9 +251,9 @@
     </section>
 
     <!-- 主要内容区 -->
-    <main class="flex-1 container mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
-        <!-- 侧边栏 -->
-        <aside class="w-full md:w-64 bg-white rounded-custom shadow-card p-4 md:sticky md:top-24">
+    <main class="flex-1 container mx-auto px-4 py-4 md:py-6 flex flex-col lg:flex-row gap-4 md:gap-6">
+        <!-- 侧边栏 - 折叠屏自动适配 -->
+        <aside class="w-full lg:w-64 bg-white rounded-custom shadow-card p-4 md:sticky md:top-24">
             <div class="flex items-center space-x-4 mb-6">
                 <img src="A257F81E81E3B0681F4A5A0810ABF69C.jpg" alt="Profile" class="w-14 h-14 rounded-full border-2 border-primary">
                 <div>
@@ -266,34 +286,34 @@
         
         <!-- 主内容 -->
         <div class="flex-1">
-            <!-- 数据卡片区域 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <!-- 数据卡片区域 - 完美适配折叠屏 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 laptop:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
                 <div class="bg-white rounded-custom shadow-card p-4 card-hover">
-                    <img src="17FC2D00E9C41EF043165790A046028C.png" alt="数据展示" class="w-full h-32 object-cover rounded-custom mb-3">
+                    <img src="17FC2D00E9C41EF043165790A046028C.png" alt="数据展示" class="w-full h-28 fold:h-32 object-cover rounded-custom mb-3">
                     <h3 class="font-bold text-dark">聚会</h3>
                     <p class="text-sm text-gray-500">无</p>
                 </div>
                 <div class="bg-white rounded-custom shadow-card p-4 card-hover">
-                    <img src="2F7D620D99E72180090CD0599A76CB99.png" alt="数据展示" class="w-full h-32 object-cover rounded-custom mb-3">
+                    <img src="2F7D620D99E72180090CD0599A76CB99.png" alt="数据展示" class="w-full h-28 fold:h-32 object-cover rounded-custom mb-3">
                     <h3 class="font-bold text-dark">聚会</h3>
                     <p class="text-sm text-gray-500">无</p>
                 </div>
                 <div class="bg-white rounded-custom shadow-card p-4 card-hover">
-                    <img src="F5198AF62797B30E513A36DE9D26D03C.jpg" alt="数据展示" class="w-full h-32 object-cover rounded-custom mb-3">
+                    <img src="F5198AF62797B30E513A36DE9D26D03C.jpg" alt="数据展示" class="w-full h-28 fold:h-32 object-cover rounded-custom mb-3">
                     <h3 class="font-bold text-dark">聚会</h3>
                     <p class="text-sm text-gray-500">无</p>
                 </div>
                 <div class="bg-white rounded-custom shadow-card p-4 card-hover">
-                    <img src="47DBA5D764FE77D40D658993D57C5ECE.png" alt="数据展示" class="w-full h-32 object-cover rounded-custom mb-3">
+                    <img src="47DBA5D764FE77D40D658993D57C5ECE.png" alt="数据展示" class="w-full h-28 fold:h-32 object-cover rounded-custom mb-3">
                     <h3 class="font-bold text-dark">聚会</h3>
                     <p class="text-sm text-gray-500">无</p>
                 </div>
             </div>
             
             <!-- 列表区域 -->
-            <div class="bg-white rounded-custom shadow-card p-4 mb-6">
-                <h2 class="text-xl font-bold text-dark mb-4">列表内容</h2>
-                <div class="space-y-4">
+            <div class="bg-white rounded-custom shadow-card p-4 mb-4 md:mb-6">
+                <h2 class="text-lg md:text-xl font-bold text-dark mb-4">列表内容</h2>
+                <div class="space-y-3 md:space-y-4">
                     <div class="border-l-4 border-primary pl-4 py-2 hover:bg-gray-50 transition-colors rounded-custom">
                         <h3 class="font-medium text-dark">项目标题1</h3>
                         <p class="text-sm text-gray-600">这是一个项目的详细描述信息，包含了该项目的主要内容和特点。</p>
@@ -318,7 +338,7 @@
             </div>
             
             <!-- 提示和消息区域 -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4">
                 <div class="bg-white rounded-custom shadow-card p-4 lg:col-span-1">
                     <h3 class="font-bold text-dark mb-3">提示信息</h3>
                     <p class="text-sm text-gray-600">工程款：8元
@@ -337,7 +357,7 @@
     </main>
 
     <!-- 页脚 -->
-    <footer class="bg-white shadow-inner py-6 rounded-t-custom">
+    <footer class="bg-white shadow-inner py-4 md:py-6 rounded-t-custom">
         <div class="container mx-auto px-4 text-center text-gray-600 text-sm">
             <p>© 2025 向华公安部 版权所有</p>
             <p>版本号：V2.5.0</p>
@@ -345,23 +365,23 @@
         </div>
     </footer>
 
-    <!-- 登录弹窗 -->
+    <!-- 登录弹窗 - 手机/折叠屏全屏 -->
     <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-70 blur-bg z-50 hidden">
-        <div class="flex items-center justify-center h-full p-4">
-            <div class="bg-white rounded-custom shadow-lg w-full max-w-md mx-4 scale-in">
-                <div class="relative">
+        <div class="flex items-center justify-center h-full p-2 md:p-4">
+            <div class="bg-white rounded-custom shadow-lg w-full max-w-md md:max-w-lg mx-4 scale-in h-[85vh] fold:h-auto fold:max-h-[90vh] overflow-hidden">
+                <div class="relative h-full flex flex-col">
                     <button id="closeLogin" class="absolute top-4 right-4 text-gray-600 hover:text-gray-800 z-10">
-                        <i class="fa fa-times"></i>
+                        <i class="fa fa-times text-xl"></i>
                     </button>
                     
-                    <div class="p-6">
-                        <div class="text-center mb-6">
-                            <img src="A257F81E81E3B0681F4A5A0810ABF69C.jpg" alt="Logo" class="w-20 h-20 mx-auto rounded-full border-2 border-primary">
-                            <h2 class="text-2xl font-bold text-dark mt-3">账号登录</h2>
+                    <div class="p-4 md:p-6 flex-1 overflow-y-auto">
+                        <div class="text-center mb-4 md:mb-6">
+                            <img src="A257F81E81E3B0681F4A5A0810ABF69C.jpg" alt="Logo" class="w-16 md:w-20 h-16 md:h-20 mx-auto rounded-full border-2 border-primary">
+                            <h2 class="text-xl md:text-2xl font-bold text-dark mt-3">账号登录</h2>
                             <p class="text-sm text-gray-500">请输入账号和密码</p>
                         </div>
                         
-                        <form id="loginForm" class="space-y-4">
+                        <form id="loginForm" class="space-y-3 md:space-y-4">
                             <div>
                                 <label for="username" class="block text-sm font-medium text-gray-700 mb-1">账号</label>
                                 <input type="text" id="username" name="username" class="w-full border border-gray-300 rounded-custom px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="请输入账号" required>
@@ -372,7 +392,7 @@
                                 <input type="password" id="password" name="password" class="w-full border border-gray-300 rounded-custom px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="请输入密码" required>
                             </div>
                             
-                            <button type="submit" class="w-full btn-primary py-3">
+                            <button type="submit" class="w-full btn-primary py-2 md:py-3">
                                 <i class="fa fa-sign-in mr-2"></i>登录
                             </button>
                         </form>
@@ -382,16 +402,16 @@
         </div>
     </div>
 
-    <!-- DeepSeek 大模型聊天窗口 - 修复定位和拖动类 -->
+    <!-- DeepSeek 大模型聊天窗口 - 全设备适配 -->
     <div id="chatWindow" class="chat-window-base bg-white rounded-custom shadow-lg overflow-hidden transform transition-all duration-500 scale-0 opacity-0 snap-animation" style="touch-action: none;">
-        <!-- 拖动头部 - 优化拖动样式 -->
+        <!-- 拖动头部 -->
         <div class="bg-secondary text-white p-3 flex justify-between items-center rounded-t-custom draggable">
             <h3 class="font-bold">DeepSeek 大模型</h3>
             <button id="closeChat" class="text-white hover:text-gray-200">
                 <i class="fa fa-times"></i>
             </button>
         </div>
-        <div id="chatMessages" class="h-64 overflow-y-auto p-3 space-y-3 bg-gray-50">
+        <div id="chatMessages" class="h-48 fold:h-52 md:h-64 overflow-y-auto p-3 space-y-3 bg-gray-50">
             <div class="flex justify-start">
                 <div class="bg-white rounded-custom p-2 shadow-sm max-w-[80%]">
                     <p class="text-sm text-gray-800">你好！我是 DeepSeek 大模型，有什么可以帮助你的吗？</p>
@@ -408,19 +428,19 @@
         </div>
     </div>
 
-    <!-- 歌曲播放弹窗 -->
+    <!-- 歌曲播放弹窗 - 全设备适配 -->
     <div id="musicModal" class="fixed inset-0 bg-black bg-opacity-70 blur-bg z-50 hidden">
-        <div class="flex items-center justify-center h-full p-4">
-            <div class="bg-white rounded-custom shadow-lg w-full max-w-md scale-in">
-                <div class="relative">
+        <div class="flex items-center justify-center h-full p-2 md:p-4">
+            <div class="bg-white rounded-custom shadow-lg w-full max-w-md md:max-w-lg scale-in h-[85vh] fold:h-auto overflow-hidden">
+                <div class="relative h-full flex flex-col">
                     <button id="closeMusic" class="absolute top-4 right-4 text-gray-600 hover:text-gray-800 z-10">
-                        <i class="fa fa-times"></i>
+                        <i class="fa fa-times text-xl"></i>
                     </button>
                     
-                    <div class="p-6">
+                    <div class="p-4 md:p-6 flex-1 overflow-y-auto">
                         <div class="text-center mb-4">
-                            <img src="https://picsum.photos/seed/music/200/200" alt="歌曲封面" class="w-32 h-32 mx-auto rounded-custom shadow-md">
-                            <h2 class="text-xl font-bold text-dark mt-3">向华之歌</h2>
+                            <img src="https://picsum.photos/seed/music/200/200" alt="歌曲封面" class="w-24 md:w-32 h-24 md:h-32 mx-auto rounded-custom shadow-md">
+                            <h2 class="text-lg md:text-xl font-bold text-dark mt-3">向华之歌</h2>
                             <p class="text-sm text-gray-500">向华公安部</p>
                         </div>
                         
@@ -548,7 +568,12 @@
         const DEEPSEEK_API_KEY = 'sk-ee9657049afd4f9184d0dc7662818673';
         const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 
-        // 对话框拖动+自动吸附功能 - 修复吸附到角落的问题
+        // 检测是否为小屏设备（手机/折叠屏）
+        function isMobileDevice() {
+            return window.innerWidth <= 768;
+        }
+
+        // 对话框拖动+自动吸附功能 - 全设备兼容
         function initDraggableChatWindow() {
             const chatWindow = document.getElementById('chatWindow');
             const dragHandle = chatWindow.querySelector('.draggable');
@@ -566,12 +591,27 @@
                 chatHeight = chatWindow.offsetHeight;
             }
             
+            // 手机/折叠屏自动全屏聊天窗口
+            function adjustChatWindowSize() {
+                if (isMobileDevice()) {
+                    chatWindow.classList.add('chat-fullscreen');
+                } else {
+                    chatWindow.classList.remove('chat-fullscreen');
+                }
+                updateDimensions();
+            }
+            
+            // 初始调整 & 窗口变化时调整
+            adjustChatWindowSize();
+            window.addEventListener('resize', adjustChatWindowSize);
+            
             // 开始拖动
             dragHandle.addEventListener('mousedown', (e) => {
+                if (isMobileDevice()) return; // 手机端禁止拖动，保持全屏
+                
                 isDragging = true;
                 chatWindow.classList.add('dragging');
                 
-                // 获取当前位置
                 const rect = chatWindow.getBoundingClientRect();
                 startX = e.clientX;
                 startY = e.clientY;
@@ -580,7 +620,6 @@
                 
                 updateDimensions();
                 
-                // 清除transform，改用left/top定位
                 chatWindow.style.transform = 'none';
                 
                 e.preventDefault();
@@ -589,7 +628,7 @@
             
             // 鼠标移动
             document.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
+                if (!isDragging || isMobileDevice()) return;
                 
                 const deltaX = e.clientX - startX;
                 const deltaY = e.clientY - startY;
@@ -597,11 +636,9 @@
                 let x = initialLeft + deltaX;
                 let y = initialTop + deltaY;
                 
-                // 限制在视口内
                 x = Math.max(0, Math.min(x, windowWidth - chatWidth));
                 y = Math.max(0, Math.min(y, windowHeight - chatHeight));
                 
-                // 实时更新位置
                 chatWindow.style.transition = 'none';
                 chatWindow.style.left = `${x}px`;
                 chatWindow.style.top = `${y}px`;
@@ -609,35 +646,27 @@
                 chatWindow.style.bottom = 'auto';
             });
             
-            // 结束拖动 - 修复吸附逻辑，确保能精准吸附到四个角落
+            // 结束拖动
             document.addEventListener('mouseup', () => {
-                if (!isDragging) return;
+                if (!isDragging || isMobileDevice()) return;
                 
                 isDragging = false;
                 chatWindow.classList.remove('dragging');
                 chatWindow.style.transition = 'all 0.3s ease-out';
                 
-                // 获取当前位置
                 const rect = chatWindow.getBoundingClientRect();
                 const centerX = rect.left + chatWidth / 2;
                 const centerY = rect.top + chatHeight / 2;
                 
-                // 计算到四个角落的距离（而不是边缘）
                 const cornerDistances = {
-                    // 左上角
                     topLeft: Math.sqrt(Math.pow(centerX, 2) + Math.pow(centerY, 2)),
-                    // 右上角
                     topRight: Math.sqrt(Math.pow(windowWidth - centerX, 2) + Math.pow(centerY, 2)),
-                    // 左下角
                     bottomLeft: Math.sqrt(Math.pow(centerX, 2) + Math.pow(windowHeight - centerY, 2)),
-                    // 右下角
                     bottomRight: Math.sqrt(Math.pow(windowWidth - centerX, 2) + Math.pow(windowHeight - centerY, 2))
                 };
                 
-                // 找到最近的角落
                 const closestCorner = Object.entries(cornerDistances).sort((a, b) => a[1] - b[1])[0][0];
                 
-                // 吸附到最近的角落
                 switch(closestCorner) {
                     case 'topLeft':
                         chatWindow.style.left = '16px';
@@ -658,8 +687,9 @@
                 }
             });
             
-            // 触摸设备支持
+            // 触摸支持
             dragHandle.addEventListener('touchstart', (e) => {
+                if (isMobileDevice()) return;
                 const touch = e.touches[0];
                 const mouseEvent = new MouseEvent('mousedown', {
                     clientX: touch.clientX,
@@ -684,13 +714,12 @@
                 e.preventDefault();
             });
             
-            document.addEventListener('touchend', (e) => {
+            document.addEventListener('touchend', () => {
                 const mouseEvent = new MouseEvent('mouseup', {
                     bubbles: true,
                     cancelable: true
                 });
                 document.dispatchEvent(mouseEvent);
-                e.preventDefault();
             });
             
             window.addEventListener('resize', updateDimensions);
@@ -708,12 +737,15 @@
                 const chatWindow = document.getElementById('chatWindow');
                 chatWindow.classList.remove('scale-0', 'opacity-0');
                 chatWindow.classList.add('scale-100', 'opacity-100');
-                // 重置位置
-                chatWindow.style.transform = 'translate(-50%, -50%)';
-                chatWindow.style.left = '';
-                chatWindow.style.top = '';
-                chatWindow.style.right = '';
-                chatWindow.style.bottom = '';
+                
+                if (!isMobileDevice()) {
+                    chatWindow.style.transform = 'translate(-50%, -50%)';
+                    chatWindow.style.left = '';
+                    chatWindow.style.top = '';
+                    chatWindow.style.right = '';
+                    chatWindow.style.bottom = '';
+                }
+                
                 setTimeout(() => { 
                     document.getElementById('userInput').focus(); 
                 }, 300);
@@ -783,12 +815,14 @@
                 const chatWindow = document.getElementById('chatWindow');
                 chatWindow.classList.remove('scale-0', 'opacity-0');
                 chatWindow.classList.add('scale-100', 'opacity-100');
-                // 重置位置
-                chatWindow.style.transform = 'translate(-50%, -50%)';
-                chatWindow.style.left = '';
-                chatWindow.style.top = '';
-                chatWindow.style.right = '';
-                chatWindow.style.bottom = '';
+                
+                if (!isMobileDevice()) {
+                    chatWindow.style.transform = 'translate(-50%, -50%)';
+                    chatWindow.style.left = '';
+                    chatWindow.style.top = '';
+                    chatWindow.style.right = '';
+                    chatWindow.style.bottom = '';
+                }
             });
             
             document.getElementById('closeChat').addEventListener('click', function() {
@@ -829,7 +863,6 @@
                 }, 500);
                 
                 try {
-                   
                     const response = await fetch(DEEPSEEK_API_URL, {
                         method: 'POST',
                         headers: {
@@ -859,7 +892,6 @@
                     const data = await response.json();
                     const aiReply = data.choices[0].message.content;
                     
-                    
                     const replyMessage = document.createElement('div');
                     replyMessage.className = 'flex justify-start';
                     replyMessage.innerHTML = `<div class="bg-white rounded-custom p-2 shadow-sm max-w-[80%] slide-up"><p class="text-sm text-gray-800">${aiReply}</p></div>`;
@@ -869,7 +901,6 @@
                 } catch (error) {
                     clearInterval(dotInterval);
                     chatMessages.removeChild(thinkingMessage);
-                    
                     
                     const errorMessage = document.createElement('div');
                     errorMessage.className = 'flex justify-start';
